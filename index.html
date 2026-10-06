@@ -91,24 +91,19 @@ body.focus main{grid-template-columns:1fr}
 <div class="card"><h3>📖 今日の言葉</h3>
 <div id="wd"></div><div id="wm"></div>
 <div class="row"><button id="pv">←</button><button id="nx">→</button><small>30秒ごとに切替</small></div>
-<div class="row" style="margin-top:6px"><button id="wmg">言葉を管理</button></div></div>
+<div class="row" style="margin-top:6px"><button id="wmg">一覧</button></div></div>
 </aside>
 </main>
 <div id="fx"></div>
 <div id="dlg"><div class="in">
-<div class="row" style="justify-content:space-between"><h3 style="margin:0;font-size:16px">言葉の管理(<span id="wcnt">0</span>語)</h3><button id="dx">閉じる</button></div>
-<div class="row" style="margin:8px 0"><input type="text" id="wq" placeholder="一覧を検索" style="flex:1"></div>
-<div id="wl"></div>
-<h4>新しい言葉を追加</h4>
-<div class="row"><input type="text" id="aw" placeholder="語" style="width:110px"><input type="text" id="ar" placeholder="読み" style="width:110px"><input type="text" id="am" placeholder="意味" style="flex:1;min-width:140px"><button id="aa">追加</button></div>
-<h4>書き出し用JSON(words.json + 追加分)</h4>
-<textarea id="wj" rows="8" style="width:100%;font:12px monospace" readonly spellcheck="false"></textarea>
-<div class="row" style="margin-top:6px"><button id="jc">コピー</button><button id="jd">words.jsonとして保存</button><button id="jx">ブラウザの追加分をクリア</button></div>
-<div class="row" style="margin-top:6px"><label class="mut">JSONファイルを読み込み(追加): <input type="file" id="jf" accept=".json,application/json"></label></div>
-<div class="mut" style="margin-top:6px;line-height:1.6">words.json はこのHTMLと同じフォルダのファイルです。ここで追加した語は、このブラウザにだけ保存されます。ファイルに反映するには、書き出したJSONで words.json を置き換えてください。</div>
-<div class="mut" id="wst" style="margin-top:4px"></div>
-<div class="mut" id="wmsg" style="margin-top:4px"></div>
+<div class="row" style="justify-content:space-between"><h3 style="margin:0;font-size:16px">言葉の一覧(<span id="wcnt">0</span>語)</h3><button id="dx">閉じる</button></div>
+<div class="row" style="margin:8px 0"><input type="text" id="wq" placeholder="検索(語・読み・意味)" style="flex:1"></div>
+<div id="wl" style="max-height:60vh"></div>
+<div class="mut" style="margin-top:6px">行をタップすると「今日の言葉」に表示します。</div>
 </div></div>
+<script type="application/json" id="wjson">
+[]
+</script>
 <script>
 (function(){
 var $=function(i){return document.getElementById(i)};
@@ -199,35 +194,22 @@ function fb(){ed.select();try{document.execCommand("copy");ok()}catch(e){}}};
 document.addEventListener("visibilitychange",function(){if(document.hidden)save()});
 window.addEventListener("pagehide",save);
 setInterval(function(){speed();tick()},250);setInterval(function(){if(running)save()},10000);
-// 言葉(words.json を読み込み、追加分はブラウザに保存)
-var base=[],extra=[],fileOk=false,wi=0,wt=null;
+// 言葉(HTML内のJSON、または同じ場所のwords.jsonから読み込み)
 function clean(a){var seen={},o=[];a.forEach(function(x){if(x&&typeof x.word==="string"&&x.word.trim()&&typeof x.meaning==="string"&&!seen[x.word.trim()]){var w=x.word.trim();seen[w]=1;o.push({word:w,reading:String(x.reading||"").trim(),meaning:x.meaning.trim()})}});return o}
-try{var ev=JSON.parse(sg("extra",""));if(Array.isArray(ev))extra=clean(ev)}catch(e){}
-function all(){return clean(extra.concat(base))}
-var W=all();
-function showW(){var w=W[wi];if(!w){$("wd").textContent="言葉がありません";$("wm").textContent=fileOk?"「言葉を管理」から追加できます。":"words.json を読み込めませんでした。";return}$("wd").textContent=w.word+(w.reading?"("+w.reading+")":"");$("wm").textContent=w.meaning}
+function parse(t){try{var v=JSON.parse(t);if(!Array.isArray(v)&&v&&Array.isArray(v.words))v=v.words;return Array.isArray(v)?clean(v):null}catch(e){return null}}
+var W=[],wi=0,wt=null;
+function showW(){var w=W[wi];if(!w){$("wd").textContent="言葉がありません";$("wm").textContent="words.json を読み込めないか、中身が空です。ファイルを直接開かず、GitHub Pagesなどweb経由で開いているか確認してください。";return}$("wd").textContent=w.word+(w.reading?"("+w.reading+")":"");$("wm").textContent=w.meaning}
 function nextW(d){if(W.length)wi=(wi+d+W.length)%W.length;showW();clearInterval(wt);wt=setInterval(function(){nextW(1)},30000)}
 $("nx").onclick=function(){nextW(1)};$("pv").onclick=function(){nextW(-1)};
-function toJson(){return "[\n"+W.map(function(x){return "  "+JSON.stringify(x)}).join(",\n")+"\n]"}
-function msg(t){$("wmsg").textContent=t}
-function isExtra(w){return extra.some(function(x){return x.word===w})}
-function renderList(){var q=$("wq").value.trim(),h="";W.forEach(function(x,i){if(q&&(x.word+x.reading+x.meaning).indexOf(q)<0)return;var ex=isExtra(x.word);h+='<div class="wi"><span style="flex:1"><b>'+esc(x.word)+'</b> '+esc(x.reading)+' <span class="mut">'+esc(x.meaning)+'</span></span>'+(ex?'<small class="mut">追加分</small><button data-i="'+i+'">削除</button>':'<small class="mut">ファイル</small>')+'</div>'});$("wl").innerHTML=h||'<div class="mut">該当なし</div>'}
-function render(){W=all();if(wi>=W.length)wi=0;$("wcnt").textContent=W.length;renderList();$("wj").value=toJson();
-$("wst").textContent=fileOk?"words.json から"+base.length+"語を読み込み済み / ブラウザの追加分 "+extra.length+"語":"words.json を読み込めませんでした(HTMLを直接開いている場合は、簡易サーバー経由で開いてください)";showW()}
-function commit(){extra=clean(extra);ss("extra",JSON.stringify(extra));render()}
-$("wmg").onclick=function(){render();msg("");$("dlg").classList.add("on")};
+function renderList(){var q=$("wq").value.trim(),h="";$("wcnt").textContent=W.length;W.forEach(function(x,i){if(q&&(x.word+x.reading+x.meaning).indexOf(q)<0)return;h+='<div class="wi" data-i="'+i+'" style="cursor:pointer"><span style="flex:1"><b>'+esc(x.word)+'</b> '+esc(x.reading)+' <span class="mut">'+esc(x.meaning)+'</span></span></div>'});$("wl").innerHTML=h||'<div class="mut">該当なし</div>'}
+function setWords(a){W=a;wi=Math.floor(Math.random()*Math.max(1,W.length));nextW(0);renderList()}
+$("wmg").onclick=function(){renderList();$("dlg").classList.add("on")};
 $("dx").onclick=function(){$("dlg").classList.remove("on")};
 document.addEventListener("keydown",function(e){if(e.key==="Escape")$("dlg").classList.remove("on")});
 $("wq").addEventListener("input",renderList);
-$("wl").addEventListener("click",function(e){var i=e.target.getAttribute("data-i");if(i===null)return;var w=W[parseInt(i)];if(!w)return;extra=extra.filter(function(x){return x.word!==w.word});commit();msg("追加分から削除しました")});
-$("aa").onclick=function(){var w=$("aw").value.trim(),m=$("am").value.trim();if(!w||!m){msg("語と意味は必須です");return}extra=extra.filter(function(x){return x.word!==w});extra.unshift({word:w,reading:$("ar").value.trim(),meaning:m});wi=0;commit();$("aw").value="";$("ar").value="";$("am").value="";msg("「"+w+"」を追加しました")};
-$("jf").onchange=function(){var f=this.files[0],inp=this;if(!f)return;var r=new FileReader();r.onload=function(){try{var a=JSON.parse(r.result);if(!Array.isArray(a)&&a&&Array.isArray(a.words))a=a.words;if(!Array.isArray(a))throw 0;var n=clean(a).length;extra=clean(a.concat(extra));commit();msg(n+"語を追加分として読み込みました")}catch(e){msg("読み込めませんでした。JSON配列の形式にしてください")}inp.value=""};r.readAsText(f)};
-$("jc").onclick=function(){var t=$("wj");function ok(){msg("コピーしました。words.json に貼り付けてください")}function fb(){t.select();try{document.execCommand("copy");ok()}catch(e){}}try{navigator.clipboard.writeText(t.value).then(ok,fb)}catch(e){fb()}};
-$("jd").onclick=function(){try{var bl=new Blob([toJson()],{type:"application/json"}),u=URL.createObjectURL(bl),l=document.createElement("a");l.href=u;l.download="words.json";document.body.appendChild(l);l.click();l.remove();setTimeout(function(){URL.revokeObjectURL(u)},1000);msg("words.json として保存しました。元のファイルと置き換えてください")}catch(e){msg("保存できませんでした。コピーを使ってください")}};
-$("jx").onclick=function(){if(!confirm("このブラウザに保存した追加分を消します。words.json に反映済みか確認しましたか?"))return;extra=[];commit();msg("追加分をクリアしました")};
-function loadFile(){fetch("words.json?"+Date.now(),{cache:"no-store"}).then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(a){if(!Array.isArray(a)&&a&&Array.isArray(a.words))a=a.words;if(!Array.isArray(a))throw 0;base=clean(a);fileOk=true;wi=0;render()}).catch(function(){fileOk=false;render()})}
-wi=Math.floor(Math.random()*Math.max(1,W.length));
-nextW(0);loadFile();
+$("wl").addEventListener("click",function(e){var el=e.target.closest(".wi");if(!el)return;wi=parseInt(el.getAttribute("data-i"));nextW(0);$("dlg").classList.remove("on")});
+setWords(parse($("wjson").textContent)||[]);
+try{fetch("words.json",{cache:"no-store"}).then(function(r){return r.ok?r.text():Promise.reject()}).then(function(t){var a=parse(t);if(a&&a.length)setWords(a)}).catch(function(){})}catch(e){}
 stats();speed();tick();highlight();
 if(sg("text","")!=="")$("saved").textContent="前回の内容を復元しました";
 })();
