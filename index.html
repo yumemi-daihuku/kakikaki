@@ -16,8 +16,12 @@ header{display:flex;gap:8px;align-items:center;padding:10px 14px;border-bottom:1
 #title{flex:1;min-width:140px;font:700 18px inherit;font-family:inherit;background:transparent;color:var(--fg);border:0;border-bottom:1px dashed var(--bd);padding:4px}
 button,select,input[type=number]{font-family:inherit;background:var(--card);color:var(--fg);border:1px solid var(--bd);border-radius:6px;padding:5px 10px;cursor:pointer}
 button:hover{border-color:var(--ac)}
-main{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:12px;padding:12px 14px;max-width:1100px;margin:0 auto}
-@media(max-width:760px){main{grid-template-columns:1fr}}
+main{display:grid;grid-template-columns:200px minmax(0,1fr) 280px;gap:12px;padding:12px 14px;max-width:1300px;margin:0 auto;align-items:start}
+@media(max-width:960px){main{grid-template-columns:1fr}#sl{max-height:150px}}
+#sl{max-height:62vh;overflow:auto;margin-bottom:8px}
+.si{padding:6px 8px;border:1px solid var(--bd);border-radius:6px;margin-bottom:6px;cursor:pointer}
+.si.on{border-color:var(--ac);background:var(--bg)}
+.si b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #wrap{position:relative;height:62vh;min-height:320px;background:var(--card);border:1px solid var(--bd);border-radius:8px}
 #hl,#ed{position:absolute;inset:0;margin:0;padding:14px;font-size:var(--fs,17px);line-height:1.9;font-family:inherit;white-space:pre-wrap;word-wrap:break-word;overflow-wrap:anywhere;overflow:auto;border:0;letter-spacing:0}
 #hl{color:transparent;pointer-events:none;overflow:hidden}
@@ -48,7 +52,7 @@ small,.mut{color:var(--mut);font-size:12px}
 .in input[type=text],.in textarea{font-family:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--bd);border-radius:6px;padding:5px}
 #wl{max-height:220px;overflow:auto;font-size:13px;border:1px solid var(--bd);border-radius:6px;padding:4px 8px}
 .wi{display:flex;gap:6px;align-items:center;border-bottom:1px solid var(--bd);padding:3px 0}
-body.focus aside,body.focus header .opt{display:none}
+body.focus aside,body.focus #side,body.focus header .opt{display:none}
 body.focus main{grid-template-columns:1fr}
 </style>
 </head>
@@ -63,6 +67,7 @@ body.focus main{grid-template-columns:1fr}
 <button id="copy">全文コピー</button>
 </header>
 <main>
+<nav id="side" class="card"><div class="row" style="justify-content:space-between;margin-bottom:6px"><h3 style="margin:0">📚 物語</h3><button id="sadd">＋ 新規</button></div><div id="sl"></div><div class="row"><button id="sdup">複製</button><button id="sdel">削除</button></div><small>題名は上部の欄で編集できます</small></nav>
 <section>
 <div id="wrap"><div id="hl"></div><textarea id="ed" placeholder="ここに物語を書き始めましょう…" spellcheck="false"></textarea></div>
 <div class="row" style="margin-top:8px"><label class="mut"><input type="checkbox" id="hlOn" checked> 重複語ハイライト(200字以内に2回以上)</label></div>
@@ -88,10 +93,10 @@ body.focus main{grid-template-columns:1fr}
 <div class="stat"><span>段落数</span><b id="c4">0</b></div>
 <div class="row" style="margin-top:6px"><small>目標</small><input type="number" id="goal" min="0" step="100" style="width:90px"><small>字</small></div>
 <div class="bar"><i id="pb"></i></div><small id="pt"></small></div>
-<div class="card"><h3>📖 今日の言葉</h3>
+<div class="card">
+<div class="row" style="justify-content:space-between;margin-bottom:6px"><h3 style="margin:0">📖 今日の言葉</h3><span class="row" style="gap:4px"><button id="pv" style="padding:5px 8px">←</button><button id="nx" style="padding:5px 8px">→</button><button id="wmg" style="padding:5px 8px">一覧</button></span></div>
 <div id="wd"></div><div id="wm"></div>
-<div class="row"><button id="pv">←</button><button id="nx">→</button><small>30秒ごとに切替</small></div>
-<div class="row" style="margin-top:6px"><button id="wmg">一覧</button></div></div>
+<small>30秒ごとに自動で切り替わります</small></div>
 </aside>
 </main>
 <div id="fx"></div>
@@ -115,7 +120,18 @@ var PAL=["rgba(255,200,0,.5)","rgba(80,200,120,.45)","rgba(80,160,255,.45)","rgb
 // 状態
 var active=parseFloat(sg("act","0"))||0,added=parseInt(sg("add","0"))||0,lastIn=0,IDLE=30,prevLen=0;
 var tmin=parseInt(sg("tmin","25"))||25,remain=parseFloat(sg("rem",""))||tmin*60,tend=0,running=false;
-ed.value=sg("text","");$("title").value=sg("title","");$("goal").value=sg("goal","");
+var S={},IDX={ids:[],cur:""};
+function uid(){return "s"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+function saveStory(id){return ss("s_"+id,JSON.stringify(S[id]))}
+function saveIdx(){return ss("idx",JSON.stringify(IDX))}
+function loadAll(){
+try{var x=JSON.parse(sg("idx",""));if(x&&Array.isArray(x.ids))IDX=x}catch(e){}
+IDX.ids=IDX.ids.filter(function(id){try{var o=JSON.parse(sg("s_"+id,""));if(o&&typeof o.text==="string"){S[id]=o;return true}}catch(e){}return false});
+if(!IDX.ids.length){var id=uid();S[id]={title:sg("title",""),text:sg("text",""),goal:sg("goal",""),upd:Date.now()};IDX.ids=[id];IDX.cur=id;saveStory(id);saveIdx()}
+if(!S[IDX.cur])IDX.cur=IDX.ids[0];
+}
+loadAll();
+var CS=S[IDX.cur];ed.value=CS.text;$("title").value=CS.title||"";$("goal").value=CS.goal||"";
 prevLen=[...ed.value].length;$("tmin").value=tmin;
 var th=sg("theme","");if(th)document.documentElement.setAttribute("data-theme",th);
 var fs=sg("fs","17");$("fs").value=fs;document.documentElement.style.setProperty("--fs",fs+"px");
@@ -160,9 +176,23 @@ function speed(){var a=actNow();$("add").textContent=added;$("act").textContent=
 function tick(){var l=left();$("tm").textContent=fmt(l);if(running&&l<=0){running=false;remain=tmin*60;$("go").textContent="▶ 開始";$("tm").textContent=fmt(remain);done();save()}}
 // 保存
 var st=null;
-function save(){ss("text",ed.value);ss("title",$("title").value);ss("act",actNow());ss("rem",left());ss("tmin",tmin);ss("add",added);
-var ok=ss("goal",$("goal").value);$("saved").textContent=ok?"保存済み "+new Date().toLocaleTimeString("ja-JP"):"⚠ 保存できません(ブラウザの設定を確認)"}
+function save(){syncCur();ss("act",actNow());ss("rem",left());ss("tmin",tmin);ss("add",added);
+var ok=saveStory(IDX.cur)&&saveIdx();renderSide();$("saved").textContent=ok?"保存済み "+new Date().toLocaleTimeString("ja-JP"):"⚠ 保存できません(ブラウザの設定を確認)"}
 function later(){$("saved").textContent="保存中…";clearTimeout(st);st=setTimeout(save,400)}
+function syncCur(){var o=S[IDX.cur];if(!o)return;if(o.text!==ed.value||o.title!==$("title").value||o.goal!==$("goal").value){o.text=ed.value;o.title=$("title").value;o.goal=$("goal").value;o.upd=Date.now()}o.len=[...ed.value].length}
+function renderSide(){var h="";IDX.ids.forEach(function(id){var o=S[id],on=id===IDX.cur,n=on?[...ed.value].length:(o.len!=null?o.len:[...o.text].length);h+='<div class="si'+(on?" on":"")+'" data-id="'+id+'"><b>'+esc((on?$("title").value:o.title)||"無題")+'</b><small>'+n+'字 ・ '+new Date(o.upd||0).toLocaleDateString("ja-JP")+'</small></div>'});$("sl").innerHTML=h}
+function openStory(id){
+clearTimeout(st);if(S[IDX.cur]){syncCur();saveStory(IDX.cur)}
+IDX.cur=id;saveIdx();var o=S[id];ed.value=o.text;$("title").value=o.title||"";$("goal").value=o.goal||"";
+prevLen=[...ed.value].length;ed.scrollTop=0;stats();highlight();renderSide();$("saved").textContent="切り替えました"}
+$("sl").addEventListener("click",function(e){var el=e.target.closest(".si");if(el&&el.getAttribute("data-id")!==IDX.cur)openStory(el.getAttribute("data-id"))});
+$("sadd").onclick=function(){var id=uid();S[id]={title:"",text:"",goal:"",upd:Date.now(),len:0};IDX.ids.unshift(id);saveStory(id);openStory(id);$("title").focus()};
+$("sdup").onclick=function(){syncCur();var o=S[IDX.cur],id=uid();S[id]={title:(o.title||"無題")+"(複製)",text:o.text,goal:o.goal,upd:Date.now()};IDX.ids.splice(IDX.ids.indexOf(IDX.cur)+1,0,id);saveStory(id);openStory(id)};
+$("sdel").onclick=function(){var o=S[IDX.cur];if(!confirm("「"+(o.title||"無題")+"」を削除しますか?元に戻せません。"))return;
+var i=IDX.ids.indexOf(IDX.cur);try{localStorage.removeItem(K+"s_"+IDX.cur)}catch(e){}
+delete S[IDX.cur];IDX.ids.splice(i,1);
+if(!IDX.ids.length){var id=uid();S[id]={title:"",text:"",goal:"",upd:Date.now()};IDX.ids=[id];saveStory(id)}
+openStory(IDX.ids[Math.min(i,IDX.ids.length-1)])};
 var ht=null;
 ed.addEventListener("input",function(){
 var n=[...ed.value].length,d=n-prevLen,now=Date.now();if(d>0&&d<=100)added+=d;if(lastIn)active+=Math.min((now-lastIn)/1000,IDLE);lastIn=now;prevLen=n;
@@ -210,8 +240,8 @@ $("wq").addEventListener("input",renderList);
 $("wl").addEventListener("click",function(e){var el=e.target.closest(".wi");if(!el)return;wi=parseInt(el.getAttribute("data-i"));nextW(0);$("dlg").classList.remove("on")});
 setWords(parse($("wjson").textContent)||[]);
 try{fetch("words.json",{cache:"no-store"}).then(function(r){return r.ok?r.text():Promise.reject()}).then(function(t){var a=parse(t);if(a&&a.length)setWords(a)}).catch(function(){})}catch(e){}
-stats();speed();tick();highlight();
-if(sg("text","")!=="")$("saved").textContent="前回の内容を復元しました";
+renderSide();stats();speed();tick();highlight();
+if(ed.value!=="")$("saved").textContent="前回の内容を復元しました";
 })();
 </script>
 </body>
