@@ -16,7 +16,7 @@ header{display:flex;gap:8px;align-items:center;padding:10px 14px;border-bottom:1
 #title{flex:1;min-width:140px;font:700 18px inherit;font-family:inherit;background:transparent;color:var(--fg);border:0;border-bottom:1px dashed var(--bd);padding:4px}
 button,select,input[type=number]{font-family:inherit;background:var(--card);color:var(--fg);border:1px solid var(--bd);border-radius:6px;padding:5px 10px;cursor:pointer}
 button:hover{border-color:var(--ac)}
-main{display:grid;grid-template-columns:200px minmax(0,1fr) 280px;gap:12px;padding:12px 14px;max-width:1300px;margin:0 auto;align-items:start}
+main{display:grid;grid-template-columns:230px minmax(0,1fr) 280px;gap:12px;padding:12px 14px;max-width:1300px;margin:0 auto;align-items:start}
 @media(max-width:960px){main{grid-template-columns:1fr}#sl{max-height:150px}}
 #sl{max-height:62vh;overflow:auto;margin-bottom:8px}
 .si{padding:6px 8px;border:1px solid var(--bd);border-radius:6px;margin-bottom:6px;cursor:pointer}
@@ -45,14 +45,18 @@ small,.mut{color:var(--mut);font-size:12px}
 @keyframes fl{50%{background:rgba(255,200,80,.6)}}
 @keyframes pop{to{transform:scale(1.2)}}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg)}}
-#dlg{position:fixed;inset:0;display:none;background:rgba(0,0,0,.5);z-index:40;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px));overflow:auto}
-#dlg.on{display:block}
-#dlg .in{max-width:680px;margin:0 auto;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px}
+#dlg,#hd{position:fixed;inset:0;display:none;background:rgba(0,0,0,.5);z-index:40;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px));overflow:auto}
+#dlg.on,#hd.on{display:block}
+#dlg .in,#hd .in{max-width:680px;margin:0 auto;background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px}
 #dlg h4{margin:12px 0 6px}
 .in input[type=text],.in textarea{font-family:inherit;background:var(--bg);color:var(--fg);border:1px solid var(--bd);border-radius:6px;padding:5px}
 #wl{max-height:220px;overflow:auto;font-size:13px;border:1px solid var(--bd);border-radius:6px;padding:4px 8px}
 .wi{display:flex;gap:6px;align-items:center;border-bottom:1px solid var(--bd);padding:3px 0}
-#exi{font-family:inherit;background:var(--card);color:var(--fg);border:1px solid var(--bd);border-radius:6px;padding:5px}
+#exi,#fr input{font-family:inherit;background:var(--card);color:var(--fg);border:1px solid var(--bd);border-radius:6px;padding:5px}
+.ch{margin:8px 0 2px;font-size:13px;font-weight:600}
+.sc{padding:3px 6px 3px 16px;border-radius:5px;font-size:13px;cursor:pointer;border:1px solid transparent}
+.sc.on{background:var(--bg);border-color:var(--ac)}
+.ab{margin-left:4px;color:var(--mut);cursor:pointer;font-size:12px;padding:0 2px;font-weight:400}.ab:hover{color:var(--ac)}
 body.focus aside,body.focus #side,body.focus header .opt{display:none}
 body.focus main{grid-template-columns:1fr}
 </style>
@@ -62,14 +66,15 @@ body.focus main{grid-template-columns:1fr}
 <input id="title" placeholder="作品タイトル" maxlength="80">
 <span class="opt row">
 <label class="mut">文字 <select id="fs"><option value="15">小</option><option value="17" selected>中</option><option value="20">大</option><option value="24">特大</option></select></label>
-<button id="theme">🌓</button>
+<button id="bfind">検索</button><button id="bhist">履歴</button><button id="theme">🌓</button>
 </span>
 <button id="focus">集中モード</button>
 <button id="copy">全文コピー</button>
 </header>
 <main>
-<nav id="side" class="card"><div class="row" style="justify-content:space-between;margin-bottom:6px"><h3 style="margin:0">📚 物語</h3><button id="sadd">＋ 新規</button></div><div id="sl"></div><div class="row"><button id="sdup">複製</button><button id="sdel">削除</button></div><small>題名は上部の欄で編集できます</small></nav>
+<nav id="side" class="card"><div class="row" style="justify-content:space-between;margin-bottom:6px"><h3 style="margin:0">📚 物語</h3><button id="sadd">＋ 新規</button></div><div id="sl"></div><div class="row"><button id="sdup">作品複製</button><button id="sdel">作品削除</button></div><div class="row" style="margin-top:6px"><button id="cadd">＋章</button></div><div class="row" style="margin-top:6px"><button id="bkp">バックアップ</button><button id="bkr">復元</button><input type="file" id="bkf" accept=".json,application/json" hidden></div><small>題名は上部の欄、章・シーン名は✎で編集</small></nav>
 <section>
+<div id="fr" class="row" style="display:none;margin-bottom:8px"><input type="text" id="fi" placeholder="検索" style="width:130px"><input type="text" id="ri" placeholder="置換後" style="width:130px"><button id="fp">前へ</button><button id="fn">次へ</button><button id="f1">置換</button><button id="fa">すべて置換</button><small id="fc"></small></div>
 <div id="wrap"><div id="hl"></div><textarea id="ed" placeholder="ここに物語を書き始めましょう…" spellcheck="false"></textarea></div>
 <div class="row" style="margin-top:8px"><label class="mut"><input type="checkbox" id="hlOn" checked> 重複語ハイライト(200字以内に2回以上)</label></div>
 <div class="row" style="margin-top:6px"><input type="text" id="exi" placeholder="除外する語(複数は空白区切り)" style="width:210px" maxlength="60"><button id="exa">除外に追加</button></div>
@@ -91,7 +96,8 @@ body.focus main{grid-template-columns:1fr}
 <small>入力が30秒以上空いた間は執筆時間に含めません。一度に100字超の増加(貼り付け)は書いた量に数えません。</small>
 <div class="row" style="margin-top:6px"><button id="rsp">記録をリセット</button></div></div>
 <div class="card"><h3>📊 文字数</h3>
-<div class="stat"><span>総文字数</span><b id="c1">0</b></div>
+<div class="stat"><span>このシーン</span><b id="c1">0</b></div>
+<div class="stat"><span>作品全体</span><b id="c5">0</b></div>
 <div class="stat"><span>空白・改行除く</span><b id="c2">0</b></div>
 <div class="stat"><span>原稿用紙(400字)</span><b id="c3">0</b></div>
 <div class="stat"><span>段落数</span><b id="c4">0</b></div>
@@ -103,6 +109,11 @@ body.focus main{grid-template-columns:1fr}
 <small>30秒ごとに自動で切り替わります</small></div>
 </aside>
 </main>
+<div id="hd"><div class="in">
+<div class="row" style="justify-content:space-between"><h3 style="margin:0;font-size:16px">履歴(現在のシーン)</h3><button id="hx">閉じる</button></div>
+<div class="row" style="margin:8px 0;align-items:flex-start;flex-wrap:nowrap"><div id="hlist" style="width:190px;max-height:50vh;overflow:auto;border:1px solid var(--bd);border-radius:6px;padding:4px 8px"></div><div style="flex:1;min-width:0"><textarea id="hp" rows="14" readonly style="width:100%" placeholder="左の一覧から選ぶとプレビューします"></textarea><button id="hr" style="margin-top:6px">この状態に戻す</button></div></div>
+<small class="mut">約5分ごと・シーン切替時に自動保存。1シーン最大20件。</small>
+</div></div>
 <div id="fx"></div>
 <div id="dlg"><div class="in">
 <div class="row" style="justify-content:space-between"><h3 style="margin:0;font-size:16px">言葉の一覧(<span id="wcnt">0</span>語)</h3><button id="dx">閉じる</button></div>
@@ -124,18 +135,23 @@ var PAL=["rgba(255,200,0,.5)","rgba(80,200,120,.45)","rgba(80,160,255,.45)","rgb
 // 状態
 var active=parseFloat(sg("act","0"))||0,added=parseInt(sg("add","0"))||0,lastIn=0,IDLE=30,prevLen=0;
 var tmin=parseInt(sg("tmin","25"))||25,remain=parseFloat(sg("rem",""))||tmin*60,tend=0,running=false,ttotal=tmin*60;if(remain>ttotal)remain=ttotal;
+function mk(t,x){return{id:uid(),t:t,x:x||""}}
+function allSc(o){var a=[];o.ch.forEach(function(c){c.sc.forEach(function(s){a.push(s)})});return a}
+function find(o,id){return allSc(o).filter(function(s){return s.id===id})[0]}
+function total(o){return allSc(o).reduce(function(n,s){return n+[...s.x].length},0)}
+function norm(o){if(!Array.isArray(o.ch)||!o.ch.length){o.ch=[{id:uid(),t:"第一章",sc:[mk("Scene 1",o.text)]}];delete o.text}o.ch.forEach(function(c){if(!c.sc||!c.sc.length)c.sc=[mk("Scene 1")]});if(!find(o,o.cs))o.cs=o.ch[0].sc[0].id;return o}
 var S={},IDX={ids:[],cur:""};
 function uid(){return "s"+Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
 function saveStory(id){return ss("s_"+id,JSON.stringify(S[id]))}
 function saveIdx(){return ss("idx",JSON.stringify(IDX))}
 function loadAll(){
 try{var x=JSON.parse(sg("idx",""));if(x&&Array.isArray(x.ids))IDX=x}catch(e){}
-IDX.ids=IDX.ids.filter(function(id){try{var o=JSON.parse(sg("s_"+id,""));if(o&&typeof o.text==="string"){S[id]=o;return true}}catch(e){}return false});
-if(!IDX.ids.length){var id=uid();S[id]={title:sg("title",""),text:sg("text",""),goal:sg("goal",""),upd:Date.now()};IDX.ids=[id];IDX.cur=id;saveStory(id);saveIdx()}
+IDX.ids=IDX.ids.filter(function(id){try{var o=JSON.parse(sg("s_"+id,""));if(o&&(typeof o.text==="string"||Array.isArray(o.ch))){var m=!o.ch;S[id]=norm(o);if(m)saveStory(id);return true}}catch(e){}return false});
+if(!IDX.ids.length){var id=uid();S[id]=norm({title:sg("title",""),text:sg("text",""),goal:sg("goal",""),upd:Date.now()});IDX.ids=[id];IDX.cur=id;saveStory(id);saveIdx()}
 if(!S[IDX.cur])IDX.cur=IDX.ids[0];
 }
 loadAll();
-var CS=S[IDX.cur];ed.value=CS.text;$("title").value=CS.title||"";$("goal").value=CS.goal||"";
+var CS=S[IDX.cur];ed.value=find(CS,CS.cs).x;$("title").value=CS.title||"";$("goal").value=CS.goal||"";
 prevLen=[...ed.value].length;$("tmin").value=tmin;
 var th=sg("theme","");if(th)document.documentElement.setAttribute("data-theme",th);
 var fs=sg("fs","17");$("fs").value=fs;document.documentElement.style.setProperty("--fs",fs+"px");
@@ -171,7 +187,7 @@ function stats(){
 var t=ed.value,n=[...t].length,n2=[...t.replace(/\s/g,"")].length;
 $("c1").textContent=n;$("c2").textContent=n2;$("c3").textContent=(n/400).toFixed(1);
 $("c4").textContent=t.split(/\n+/).filter(function(x){return x.trim()}).length;
-var g=parseInt($("goal").value)||0;
+var o0=S[IDX.cur],s0=o0&&find(o0,o0.cs),tt=o0?total(o0)-(s0?[...s0.x].length:0)+n:n;$("c5").textContent=tt;var g=parseInt($("goal").value)||0;n=tt;
 if(g>0){var pc=Math.min(100,n/g*100);$("pb").style.width=pc+"%";$("pt").textContent=Math.floor(n/g*100)+"%(残り "+Math.max(0,g-n)+" 字)"}else{$("pb").style.width="0";$("pt").textContent=""}
 }
 function actNow(){return active+(lastIn?Math.min((Date.now()-lastIn)/1000,IDLE):0)}
@@ -182,22 +198,78 @@ function tick(){var l=left();$("tm").textContent=fmt(l);var pc=ttotal>0?Math.min
 // 保存
 var st=null;
 function save(){syncCur();ss("act",actNow());ss("rem",left());ss("tmin",tmin);ss("add",added);
-var ok=saveStory(IDX.cur)&&saveIdx();renderSide();$("saved").textContent=ok?"保存済み "+new Date().toLocaleTimeString("ja-JP"):"⚠ 保存できません(ブラウザの設定を確認)"}
+var ok=saveStory(IDX.cur)&&saveIdx();renderSide();$("saved").textContent=ok?"保存済み "+new Date().toLocaleString("ja-JP",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"}):"⚠ 保存できません(ブラウザの設定を確認)"}
 function later(){$("saved").textContent="保存中…";clearTimeout(st);st=setTimeout(save,400)}
-function syncCur(){var o=S[IDX.cur];if(!o)return;if(o.text!==ed.value||o.title!==$("title").value||o.goal!==$("goal").value){o.text=ed.value;o.title=$("title").value;o.goal=$("goal").value;o.upd=Date.now()}o.len=[...ed.value].length}
-function renderSide(){var h="";IDX.ids.forEach(function(id){var o=S[id],on=id===IDX.cur,n=on?[...ed.value].length:(o.len!=null?o.len:[...o.text].length);h+='<div class="si'+(on?" on":"")+'" data-id="'+id+'"><b>'+esc((on?$("title").value:o.title)||"無題")+'</b><small>'+n+'字 ・ '+new Date(o.upd||0).toLocaleDateString("ja-JP")+'</small></div>'});$("sl").innerHTML=h}
-function openStory(id){
-clearTimeout(st);if(S[IDX.cur]){syncCur();saveStory(IDX.cur)}
-IDX.cur=id;saveIdx();var o=S[id];ed.value=o.text;$("title").value=o.title||"";$("goal").value=o.goal||"";
-prevLen=[...ed.value].length;ed.scrollTop=0;stats();highlight();renderSide();$("saved").textContent="切り替えました"}
-$("sl").addEventListener("click",function(e){var el=e.target.closest(".si");if(el&&el.getAttribute("data-id")!==IDX.cur)openStory(el.getAttribute("data-id"))});
-$("sadd").onclick=function(){var id=uid();S[id]={title:"",text:"",goal:"",upd:Date.now(),len:0};IDX.ids.unshift(id);saveStory(id);openStory(id);$("title").focus()};
-$("sdup").onclick=function(){syncCur();var o=S[IDX.cur],id=uid();S[id]={title:(o.title||"無題")+"(複製)",text:o.text,goal:o.goal,upd:Date.now()};IDX.ids.splice(IDX.ids.indexOf(IDX.cur)+1,0,id);saveStory(id);openStory(id)};
-$("sdel").onclick=function(){var o=S[IDX.cur];if(!confirm("「"+(o.title||"無題")+"」を削除しますか?元に戻せません。"))return;
-var i=IDX.ids.indexOf(IDX.cur);try{localStorage.removeItem(K+"s_"+IDX.cur)}catch(e){}
+function syncCur(){var o=S[IDX.cur];if(!o)return;var s=find(o,o.cs);if(s&&s.x!==ed.value){s.x=ed.value;o.upd=Date.now()}if(o.title!==$("title").value||o.goal!==$("goal").value){o.title=$("title").value;o.goal=$("goal").value;o.upd=Date.now()}o.len=total(o)}
+function sl(s){return s.id===S[IDX.cur].cs?[...ed.value].length:[...s.x].length}
+function cn(c){return c.sc.reduce(function(n,s){return n+sl(s)},0)}
+function ab(a,c,s,t){return '<span class="ab" data-a="'+a+'" data-c="'+c+'" data-s="'+s+'">'+t+"</span>"}
+function renderSide(){var h="";IDX.ids.forEach(function(id){var o=S[id],on=id===IDX.cur;
+h+='<div class="si'+(on?" on":"")+'" data-id="'+id+'"><b>'+esc((on?$("title").value:o.title)||"無題")+'</b><small>'+(on?o.ch.reduce(function(n,c){return n+cn(c)},0):(o.len!=null?o.len:total(o)))+'字 ・ '+new Date(o.upd||0).toLocaleDateString("ja-JP")+'</small></div>';
+if(!on)return;
+o.ch.forEach(function(c){h+='<div class="ch">▸ '+esc(c.t)+' <small>'+cn(c)+'字</small>'+ab("sa",c.id,"","＋")+ab("rn",c.id,"","✎")+ab("up",c.id,"","▲")+ab("dn",c.id,"","▼")+ab("dc",c.id,"","✕")+"</div>";
+c.sc.forEach(function(s){var cur=s.id===o.cs;h+='<div class="sc'+(cur?" on":"")+'" data-s="'+s.id+'">'+esc(s.t)+' <small>'+sl(s)+"字</small>"+(cur?ab("rn",c.id,s.id,"✎")+ab("up",c.id,s.id,"▲")+ab("dn",c.id,s.id,"▼")+ab("dp",c.id,s.id,"⧉")+ab("ds",c.id,s.id,"✕"):"")+"</div>"})})});
+$("sl").innerHTML=h}
+function loadScene(){var o=S[IDX.cur],s=find(o,o.cs);ed.value=s.x;prevLen=[...s.x].length;ed.scrollTop=0;stats();highlight();renderSide()}
+function openStory(id,ns){clearTimeout(st);if(!ns&&S[IDX.cur]){snap();syncCur();saveStory(IDX.cur)}IDX.cur=id;saveIdx();var o=S[id];$("title").value=o.title||"";$("goal").value=o.goal||"";loadScene();$("saved").textContent="切り替えました"}
+function selScene(sid){snap();syncCur();S[IDX.cur].cs=sid;saveStory(IDX.cur);loadScene()}
+function mv(a,i,d){var j=i+d;if(j<0||j>=a.length)return;var t=a[i];a[i]=a[j];a[j]=t}
+function rmh(s){try{localStorage.removeItem(K+"h_"+s.id)}catch(e){}}
+function act(a,cid,sid){snap();syncCur();var o=S[IDX.cur],c=o.ch.filter(function(x){return x.id===cid})[0],i=o.ch.indexOf(c),k=-1,s=null,n;
+if(sid&&c){k=c.sc.findIndex(function(x){return x.id===sid});s=c.sc[k]}
+if(a==="ca"){n=mk("Scene 1");o.ch.push({id:uid(),t:"第"+(o.ch.length+1)+"章",sc:[n]});o.cs=n.id}
+else if(!c)return;
+else if(a==="rn"){var t=prompt("新しい名前",(s||c).t);if(t===null||!t.trim())return;(s||c).t=t.trim()}
+else if(a==="up"||a==="dn"){var d=a==="up"?-1:1;if(s)mv(c.sc,k,d);else mv(o.ch,i,d)}
+else if(a==="sa"){n=mk("Scene "+(c.sc.length+1));c.sc.push(n);o.cs=n.id}
+else if(a==="dp"){n=mk(s.t+"(複製)",s.x);c.sc.splice(k+1,0,n);o.cs=n.id}
+else if(a==="ds"){if(!confirm("シーン「"+s.t+"」を削除しますか?元に戻せません。"))return;rmh(s);c.sc.splice(k,1);if(!c.sc.length)o.ch.splice(i,1)}
+else if(a==="dc"){if(!confirm("章「"+c.t+"」とその中の"+c.sc.length+"シーンを削除しますか?元に戻せません。"))return;c.sc.forEach(rmh);o.ch.splice(i,1)}
+o.upd=Date.now();norm(o);saveStory(IDX.cur);loadScene()}
+$("sl").addEventListener("click",function(e){var b=e.target.closest(".ab");if(b){act(b.dataset.a,b.dataset.c,b.dataset.s);return}var sc=e.target.closest(".sc");if(sc){if(sc.dataset.s!==S[IDX.cur].cs)selScene(sc.dataset.s);return}var el=e.target.closest(".si");if(el&&el.dataset.id!==IDX.cur)openStory(el.dataset.id)});
+$("cadd").onclick=function(){act("ca")};
+$("sadd").onclick=function(){var id=uid();S[id]=norm({title:"",goal:"",upd:Date.now()});IDX.ids.unshift(id);saveStory(id);openStory(id);$("title").focus()};
+$("sdup").onclick=function(){syncCur();var id=uid(),n=JSON.parse(JSON.stringify(S[IDX.cur])),ncs;allSc(n).forEach(function(s){var u=uid();if(s.id===n.cs)ncs=u;s.id=u});n.cs=ncs;n.title=(n.title||"無題")+"(複製)";n.upd=Date.now();S[id]=n;IDX.ids.splice(IDX.ids.indexOf(IDX.cur)+1,0,id);saveStory(id);openStory(id)};
+$("sdel").onclick=function(){var o=S[IDX.cur];if(!confirm("作品「"+(o.title||"無題")+"」を全章・全シーンごと削除しますか?元に戻せません。"))return;
+var i=IDX.ids.indexOf(IDX.cur);try{localStorage.removeItem(K+"s_"+IDX.cur)}catch(e){}allSc(o).forEach(rmh);
 delete S[IDX.cur];IDX.ids.splice(i,1);
-if(!IDX.ids.length){var id=uid();S[id]={title:"",text:"",goal:"",upd:Date.now()};IDX.ids=[id];saveStory(id)}
+if(!IDX.ids.length){var id=uid();S[id]=norm({title:"",goal:"",upd:Date.now()});IDX.ids=[id];saveStory(id)}
 openStory(IDX.ids[Math.min(i,IDX.ids.length-1)])};
+// 履歴
+function hget(sid){try{var a=JSON.parse(sg("h_"+sid,"[]"));return Array.isArray(a)?a:[]}catch(e){return[]}}
+function hput(sid,txt){if(!txt)return;var a=hget(sid);if(a.length&&a[a.length-1].x===txt)return;a.push({t:Date.now(),n:[...txt].length,x:txt});while(a.length>20||(a.length>3&&JSON.stringify(a).length>600000))a.shift();ss("h_"+sid,JSON.stringify(a))}
+function snap(){var o=S[IDX.cur];if(o&&o.cs)hput(o.cs,ed.value)}
+setInterval(snap,300000);setTimeout(snap,4000);
+var hsel=-1,hdata=[];
+$("bhist").onclick=function(){snap();hdata=hget(S[IDX.cur].cs).reverse();hsel=-1;var h="";hdata.forEach(function(x,i){h+='<div class="wi" data-i="'+i+'" style="cursor:pointer"><span>'+new Date(x.t).toLocaleString("ja-JP",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})+" ・ "+x.n.toLocaleString()+"字</span></div>"});$("hlist").innerHTML=h||'<div class="mut">履歴はまだありません</div>';$("hp").value="";$("hd").classList.add("on")};
+$("hlist").addEventListener("click",function(e){var el=e.target.closest(".wi");if(!el)return;hsel=parseInt(el.dataset.i);$("hp").value=hdata[hsel].x});
+$("hr").onclick=function(){if(hsel<0)return;if(!confirm("現在のシーンの文章を、この時点の内容で上書きします。よろしいですか?\n(上書き前の内容も履歴に残ります)"))return;snap();ed.value=hdata[hsel].x;ed.dispatchEvent(new Event("input"));$("hd").classList.remove("on")};
+$("hx").onclick=function(){$("hd").classList.remove("on")};
+// 検索・置換(現在のシーン)
+function hits(q){var r=[],t=ed.value,i=0;if(!q)return r;while((i=t.indexOf(q,i))>=0){r.push(i);i+=q.length}return r}
+function reveal(pos){var t=ed.value;hl.innerHTML=esc(t.slice(0,pos))+'<span id="pm">|</span>'+esc(t.slice(pos))+"\n";ed.scrollTop=Math.max(0,$("pm").offsetTop-ed.clientHeight/3);highlight()}
+function fgo(d){var q=$("fi").value,h=hits(q);$("fc").textContent=q?h.length+"件":"";if(!h.length)return;var a=ed.selectionStart,e=ed.selectionEnd,k;
+if(d>0){k=h.findIndex(function(x){return x>=e});if(k<0)k=0}else{k=h.length-1;for(var j=h.length-1;j>=0;j--)if(h[j]<a){k=j;break}}
+ed.focus();ed.setSelectionRange(h[k],h[k]+q.length);reveal(h[k])}
+$("bfind").onclick=function(){var f=$("fr"),on=f.style.display==="none";f.style.display=on?"flex":"none";if(on)$("fi").focus()};
+$("fi").addEventListener("input",function(){var q=this.value;$("fc").textContent=q?hits(q).length+"件":""});
+$("fi").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();fgo(e.shiftKey?-1:1)}});
+$("fn").onclick=function(){fgo(1)};$("fp").onclick=function(){fgo(-1)};
+$("f1").onclick=function(){var q=$("fi").value;if(!q)return;if(ed.value.slice(ed.selectionStart,ed.selectionEnd)===q){ed.setRangeText($("ri").value,ed.selectionStart,ed.selectionEnd,"end");ed.dispatchEvent(new Event("input"))}fgo(1)};
+$("fa").onclick=function(){var q=$("fi").value,n=hits(q).length;if(!n)return;if(!confirm(n+"件を「"+$("ri").value+"」に置換します。よろしいですか?\n(Ctrl+Zでは戻せません。「履歴」から戻せます)"))return;snap();ed.value=ed.value.split(q).join($("ri").value);ed.dispatchEvent(new Event("input"));$("fc").textContent=n+"件を置換しました"};
+document.addEventListener("keydown",function(e){if(e.key==="Escape"){$("hd").classList.remove("on");$("fr").style.display="none"}if((e.ctrlKey||e.metaKey)&&e.key==="s"){e.preventDefault();save()}});
+// バックアップ・復元
+$("bkp").onclick=function(){syncCur();var w=IDX.ids.map(function(id){return Object.assign({id:id},S[id])}),hs={};IDX.ids.forEach(function(id){allSc(S[id]).forEach(function(s){var a=hget(s.id);if(a.length)hs[s.id]=a})});
+var d={app:"kakikaki",v:2,at:new Date().toISOString(),works:w,hist:hs,ex:EX},a=document.createElement("a");
+a.href=URL.createObjectURL(new Blob([JSON.stringify(d)],{type:"application/json"}));a.download="kakikaki-backup-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();$("saved").textContent="バックアップを作成しました"};
+$("bkr").onclick=function(){$("bkf").click()};
+$("bkf").onchange=function(){var f=this.files[0],inp=this;if(!f)return;var r=new FileReader();r.onload=function(){try{var d=JSON.parse(r.result);if(!d||!Array.isArray(d.works))throw 0;
+if(!confirm(d.works.length+"作品を読み込みます。同じIDの作品は上書きされます。よろしいですか?"))return;
+syncCur();saveStory(IDX.cur);var first;
+d.works.forEach(function(w){var id=w.id||uid();delete w.id;S[id]=norm(w);if(IDX.ids.indexOf(id)<0)IDX.ids.push(id);saveStory(id);first=first||id});
+Object.keys(d.hist||{}).forEach(function(k){ss("h_"+k,JSON.stringify(d.hist[k]))});
+if(Array.isArray(d.ex)){d.ex.forEach(function(x){if(typeof x==="string"&&EX.indexOf(x)<0)EX.push(x)});saveEx();renderEx()}
+if(first)openStory(first,true);$("saved").textContent="復元しました"}catch(e){$("saved").textContent="復元に失敗しました(バックアップファイルを確認してください)"}inp.value=""};r.readAsText(f)};
 var ht=null;
 ed.addEventListener("input",function(){
 var n=[...ed.value].length,d=n-prevLen,now=Date.now();if(d>0&&d<=100)added+=d;if(lastIn)active+=Math.min((now-lastIn)/1000,IDLE);lastIn=now;prevLen=n;
