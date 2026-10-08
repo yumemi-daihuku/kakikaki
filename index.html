@@ -16,9 +16,9 @@ header{display:flex;gap:8px;align-items:center;padding:10px 14px;border-bottom:1
 #title{flex:1;min-width:140px;font:700 18px inherit;font-family:inherit;background:transparent;color:var(--fg);border:0;border-bottom:1px dashed var(--bd);padding:4px}
 button,select,input[type=number]{font-family:inherit;background:var(--card);color:var(--fg);border:1px solid var(--bd);border-radius:6px;padding:5px 10px;cursor:pointer}
 button:hover{border-color:var(--ac)}
-main{display:grid;grid-template-columns:230px minmax(0,1fr) 280px;gap:12px;padding:12px 14px;max-width:1300px;margin:0 auto;align-items:start}
+main{display:grid;grid-template-columns:300px minmax(0,1fr) 280px;gap:12px;padding:12px 14px;max-width:1300px;margin:0 auto;align-items:start}
 @media(max-width:960px){main{grid-template-columns:1fr}#sl{max-height:150px}}
-#sl{max-height:62vh;overflow:auto;margin-bottom:8px}
+#sl{max-height:72vh;overflow:auto;margin-bottom:8px}
 .si{padding:6px 8px;border:1px solid var(--bd);border-radius:6px;margin-bottom:6px;cursor:pointer}
 .si.on{border-color:var(--ac);background:var(--bg)}
 .si b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -57,6 +57,21 @@ small,.mut{color:var(--mut);font-size:12px}
 .sc{padding:3px 6px 3px 16px;border-radius:5px;font-size:13px;cursor:pointer;border:1px solid transparent}
 .sc.on{background:var(--bg);border-color:var(--ac)}
 .ab{margin-left:4px;color:var(--mut);cursor:pointer;font-size:12px;padding:0 2px;font-weight:400}.ab:hover{color:var(--ac)}
+#side{padding:14px}#side h3{font-size:16px}#side button{padding:8px 12px;font-size:14px}
+.si{padding:10px 12px}.si b{font-size:16px}.si small{font-size:12px}
+.ch{font-size:15px;margin:12px 0 4px}.sc{font-size:15px;padding:6px 8px 6px 18px}
+.ab{font-size:15px;padding:2px 5px;margin-left:6px}
+@media(max-width:960px){#sl{max-height:260px}}
+#tabs{display:flex;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);overflow-x:auto}
+#tabs button{white-space:nowrap}#tabs button.on{border-color:var(--ac);color:var(--ac);font-weight:700}
+body.focus #tabs{display:none}
+#pg-x{max-width:1100px;margin:0 auto;padding:14px}
+.eg{display:grid;grid-template-columns:240px minmax(0,1fr);gap:14px}@media(max-width:760px){.eg{grid-template-columns:1fr}}
+.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.fm label{display:block;font-size:12px;color:var(--mut);margin-top:8px}
+.fm input,.fm textarea,#pgq{width:100%;font-family:inherit;font-size:14px;background:var(--card);color:var(--fg);border:1px solid var(--bd);border-radius:6px;padding:6px}
+.li{padding:8px 10px;border:1px solid var(--bd);border-radius:6px;margin-bottom:6px;cursor:pointer;background:var(--card)}.li.on{border-color:var(--ac)}
+.bars{display:flex;gap:8px;align-items:flex-end;height:150px}.bars div{flex:1;text-align:center;font-size:12px}.bars i{display:block;background:var(--ac);border-radius:4px 4px 0 0;min-height:2px}
 body.focus aside,body.focus #side,body.focus header .opt{display:none}
 body.focus main{grid-template-columns:1fr}
 </style>
@@ -71,6 +86,7 @@ body.focus main{grid-template-columns:1fr}
 <button id="focus">集中モード</button>
 <button id="copy">全文コピー</button>
 </header>
+<nav id="tabs"><button data-p="w" class="on">✍ 執筆</button><button data-p="x">📊 統計</button><button data-p="ch">👤 登場人物</button><button data-p="wd">🌏 設定資料</button><button data-p="tm">📖 用語辞典</button><button data-p="pl">🧭 プロット</button></nav>
 <main>
 <nav id="side" class="card"><div class="row" style="justify-content:space-between;margin-bottom:6px"><h3 style="margin:0">📚 物語</h3><button id="sadd">＋ 新規</button></div><div id="sl"></div><div class="row"><button id="sdup">作品複製</button><button id="sdel">作品削除</button></div><div class="row" style="margin-top:6px"><button id="cadd">＋章</button></div><div class="row" style="margin-top:6px"><button id="bkp">バックアップ</button><button id="bkr">復元</button><input type="file" id="bkf" accept=".json,application/json" hidden></div><small>題名は上部の欄、章・シーン名は✎で編集</small></nav>
 <section>
@@ -102,13 +118,14 @@ body.focus main{grid-template-columns:1fr}
 <div class="stat"><span>原稿用紙(400字)</span><b id="c3">0</b></div>
 <div class="stat"><span>段落数</span><b id="c4">0</b></div>
 <div class="row" style="margin-top:6px"><small>目標</small><input type="number" id="goal" min="0" step="100" style="width:90px"><small>字</small></div>
-<div class="bar"><i id="pb"></i></div><small id="pt"></small></div>
+<div class="bar"><i id="pb"></i></div><small id="pt"></small><br><small id="dgt" class="mut"></small></div>
 <div class="card">
 <div class="row" style="justify-content:space-between;margin-bottom:6px"><h3 style="margin:0">📖 今日の言葉</h3><span class="row" style="gap:4px"><button id="pv" style="padding:5px 8px">←</button><button id="nx" style="padding:5px 8px">→</button><button id="wmg" style="padding:5px 8px">一覧</button></span></div>
 <div id="wd"></div><div id="wm"></div>
 <small>30秒ごとに自動で切り替わります</small></div>
 </aside>
 </main>
+<div id="pg-x" style="display:none"></div>
 <div id="hd"><div class="in">
 <div class="row" style="justify-content:space-between"><h3 style="margin:0;font-size:16px">履歴(現在のシーン)</h3><button id="hx">閉じる</button></div>
 <div class="row" style="margin:8px 0;align-items:flex-start;flex-wrap:nowrap"><div id="hlist" style="width:190px;max-height:50vh;overflow:auto;border:1px solid var(--bd);border-radius:6px;padding:4px 8px"></div><div style="flex:1;min-width:0"><textarea id="hp" rows="14" readonly style="width:100%" placeholder="左の一覧から選ぶとプレビューします"></textarea><button id="hr" style="margin-top:6px">この状態に戻す</button></div></div>
@@ -197,7 +214,7 @@ function speed(){var a=actNow();$("add").textContent=added;$("act").textContent=
 function tick(){var l=left();$("tm").textContent=fmt(l);var pc=ttotal>0?Math.min(100,l/ttotal*100):0;$("tb").style.width=pc+"%";$("tb").style.background=running&&pc<=10?"#c0392b":"";if(running&&l<=0){running=false;remain=ttotal=tmin*60;$("go").textContent="▶ 開始";$("tm").textContent=fmt(remain);done();save()}}
 // 保存
 var st=null;
-function save(){syncCur();ss("act",actNow());ss("rem",left());ss("tmin",tmin);ss("add",added);
+function save(){syncCur();if(LOGD){ss("log",JSON.stringify(LOG));LOGD=0}ss("act",actNow());ss("rem",left());ss("tmin",tmin);ss("add",added);
 var ok=saveStory(IDX.cur)&&saveIdx();renderSide();$("saved").textContent=ok?"保存済み "+new Date().toLocaleString("ja-JP",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"}):"⚠ 保存できません(ブラウザの設定を確認)"}
 function later(){$("saved").textContent="保存中…";clearTimeout(st);st=setTimeout(save,400)}
 function syncCur(){var o=S[IDX.cur];if(!o)return;var s=find(o,o.cs);if(s&&s.x!==ed.value){s.x=ed.value;o.upd=Date.now()}if(o.title!==$("title").value||o.goal!==$("goal").value){o.title=$("title").value;o.goal=$("goal").value;o.upd=Date.now()}o.len=total(o)}
@@ -272,7 +289,7 @@ if(Array.isArray(d.ex)){d.ex.forEach(function(x){if(typeof x==="string"&&EX.inde
 if(first)openStory(first,true);$("saved").textContent="復元しました"}catch(e){$("saved").textContent="復元に失敗しました(バックアップファイルを確認してください)"}inp.value=""};r.readAsText(f)};
 var ht=null;
 ed.addEventListener("input",function(){
-var n=[...ed.value].length,d=n-prevLen,now=Date.now();if(d>0&&d<=100)added+=d;if(lastIn)active+=Math.min((now-lastIn)/1000,IDLE);lastIn=now;prevLen=n;
+var n=[...ed.value].length,d=n-prevLen,now=Date.now();if(d>0&&d<=100){added+=d;logAdd(d,0)}if(lastIn){var gp=Math.min((now-lastIn)/1000,IDLE);active+=gp;logAdd(0,gp)}lastIn=now;prevLen=n;updDG();
 stats();speed();later();clearTimeout(ht);ht=setTimeout(highlight,120)});
 ed.addEventListener("scroll",function(){hl.scrollTop=ed.scrollTop});
 $("title").addEventListener("input",later);
@@ -287,6 +304,61 @@ $("exi").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDef
 $("exl").addEventListener("click",function(e){var el=e.target.closest(".ex");if(!el)return;EX.splice(parseInt(el.getAttribute("data-i")),1);saveEx();renderEx();highlight()});
 $("legend").addEventListener("click",function(e){var el=e.target.closest(".lg");if(el)addEx(decodeURIComponent(el.getAttribute("data-w")))});
 renderEx();
+// ===== Tier2: 別ページ群 =====
+var LOG={},LOGD=0,DG=parseInt(sg("dg","0"))||0,PG="w",curRec=null,pt=null,qs="",sel={ch:null,wd:null,tm:null};
+try{LOG=JSON.parse(sg("log","{}"))||{}}catch(e){}
+function dkey(d){return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function logAdd(c,t){var k=dkey(new Date()),e=LOG[k]||(LOG[k]={c:0,t:0});e.c+=c;e.t+=t;LOGD=1}
+function updDG(){var c=(LOG[dkey(new Date())]||{c:0}).c;$("dgt").textContent=DG?"今日 "+c+" / "+DG+"字"+(c>=DG?" ・今日の目標を達成しました":""):""}
+function qa(s){return esc(String(s)).replace(/"/g,"&quot;")}
+var TY={ch:{k:"cr",t:"登場人物",f:[["名前"],["読み"],["年齢"],["性別"],["種族"],["性格","t"],["外見","t"],["一人称"],["二人称"],["口調"],["好きなもの"],["嫌いなもの"],["能力","t"],["所属"],["備考","t"]]},
+wd:{k:"wd",t:"設定資料",f:[["名前"],["カテゴリ","c"],["内容","t"]]},
+tm:{k:"tm",t:"用語辞典",f:[["語"],["読み"],["種類"],["説明","t"],["関連人物"]]}};
+var PF=[["タイトル"],["あらすじ","t"],["起","t"],["承","t"],["転","t"],["結","t"],["キャラクター","t"],["重要イベント","t"],["結末","t"],["メモ","t"]];
+var CATS=["世界観","地理","国家","組織","種族","魔法","技術","歴史","宗教","文化","用語","その他"];
+function pgHead(t){var h='<h2 style="margin:0 0 10px;font-size:18px">'+t+'</h2><div class="row" style="margin-bottom:12px"><span class="mut">作品:</span><select id="pgw">';IDX.ids.forEach(function(id){h+='<option value="'+id+'"'+(id===IDX.cur?" selected":"")+">"+esc(S[id].title||"無題")+"</option>"});return h+'</select><span class="mut" id="pgs"></span></div>'}
+function fh(f,v,extra){return "<label>"+f[0]+"</label>"+(f[1]==="t"?'<textarea rows="3" data-f="'+f[0]+'">'+esc(v||"")+"</textarea>":'<input type="text" data-f="'+f[0]+'" value="'+qa(v||"")+'"'+(f[1]==="c"?' list="cl"':"")+">")}
+function touch(){S[IDX.cur].upd=Date.now();$("pgs")&&($("pgs").textContent="保存中…");clearTimeout(pt);pt=setTimeout(function(){saveStory(IDX.cur);saveIdx();$("pgs")&&($("pgs").textContent="保存済み")},400)}
+function listH(ty){var T=TY[ty],arr=S[IDX.cur][T.k]||[],h="";arr.forEach(function(r){var tx=T.f.map(function(f){return r[f[0]]||""}).join(" ");if(qs&&tx.indexOf(qs)<0)return;h+='<div class="li'+(r.id===sel[ty]?" on":"")+'" data-id="'+r.id+'"><b>'+esc(r[T.f[0][0]]||"(無題)")+"</b>"+(ty==="wd"&&r["カテゴリ"]?' <small class="mut">'+esc(r["カテゴリ"])+"</small>":"")+"</div>"});return h||'<div class="mut">まだありません</div>'}
+function renderEnt(ty){var o=S[IDX.cur],T=TY[ty],arr=o[T.k]=o[T.k]||[],rec=arr.filter(function(r){return r.id===sel[ty]})[0];if(!rec&&arr.length){rec=arr[0];sel[ty]=rec.id}curRec=rec||null;
+var h=pgHead(T.t)+'<div class="eg"><div><div class="row" style="margin-bottom:8px;flex-wrap:nowrap"><input type="text" id="pgq" placeholder="検索" value="'+qa(qs)+'"><button id="pgadd">＋ 追加</button></div><div id="pgl">'+listH(ty)+'</div></div><div class="fm">';
+if(rec){T.f.forEach(function(f){h+=fh(f,rec[f[0]])});if(ty==="wd"){var cs=CATS.slice();arr.forEach(function(r){if(r["カテゴリ"]&&cs.indexOf(r["カテゴリ"])<0)cs.push(r["カテゴリ"])});h+='<datalist id="cl">'+cs.map(function(c){return'<option value="'+qa(c)+'">'}).join("")+"</datalist>"}h+='<div style="margin-top:14px"><button id="pgdel">この項目を削除</button></div>'}else h+='<div class="mut">「＋ 追加」から作成してください。</div>';
+$("pg-x").innerHTML=h+"</div></div>"}
+function renderPlot(){var o=S[IDX.cur],p=o.pl=o.pl||{};p._x=p._x||[];curRec=p;var h=pgHead("プロット")+'<div class="fm" style="max-width:760px">';
+PF.forEach(function(f){h+=fh(f,p[f[0]])});
+p._x.forEach(function(x,i){h+='<label><input type="text" data-x="'+i+'" data-xf="k" value="'+qa(x.k)+'" style="width:60%"> <span class="ab xdel" data-x="'+i+'">✕ 削除</span></label><textarea rows="3" data-x="'+i+'" data-xf="v">'+esc(x.v)+"</textarea>"});
+$("pg-x").innerHTML=h+'<div style="margin-top:14px"><button id="xadd">＋ 項目を追加</button></div></div>'}
+function sumLog(f){var c=0,t=0;Object.keys(LOG).forEach(function(k){if(f(k)){c+=LOG[k].c;t+=LOG[k].t}});return{c:c,t:t}}
+function fmtT(s){s=Math.round(s);var h=Math.floor(s/3600),m=Math.floor(s%3600/60);return h?h+"時間"+m+"分":m+"分"}
+function renderStats(){var now=new Date(),tk=dkey(now),wd=(now.getDay()+6)%7,ws=dkey(new Date(now.getFullYear(),now.getMonth(),now.getDate()-wd)),ms=tk.slice(0,7)+"-01";
+var td=sumLog(function(k){return k===tk}),wk=sumLog(function(k){return k>=ws&&k<=tk}),mo=sumLog(function(k){return k>=ms&&k<=tk}),all=sumLog(function(){return true});
+var days=Object.keys(LOG).filter(function(k){return LOG[k].c>0}).sort(),best=0,run=0,prev=null;
+days.forEach(function(k){var n=Date.parse(k+"T00:00:00Z")/864e5;run=(prev!==null&&n-prev===1)?run+1:1;prev=n;if(run>best)best=run});
+var tc=IDX.ids.reduce(function(n,id){return n+total(S[id])},0),L=function(x){return x.toLocaleString()};
+var r=function(a,b){return '<div class="stat"><span>'+a+"</span><b>"+b+"</b></div>"};
+var w7=[],mx=1;for(var i=6;i>=0;i--){var d=new Date(now.getFullYear(),now.getMonth(),now.getDate()-i),c=(LOG[dkey(d)]||{c:0}).c;w7.push({l:"日月火水木金土"[d.getDay()],c:c});if(c>mx)mx=c}
+var h=pgHead("執筆統計")+'<div class="cg">'+
+'<div class="card"><h3>今日の目標</h3><div class="row"><input type="number" id="dgi" min="0" step="100" value="'+(DG||"")+'" style="width:110px"><small>字　今日 '+L(td.c)+" 字</small></div>"+'<div class="bar"><i style="width:'+(DG?Math.min(100,td.c/DG*100):0)+'%"></i></div><small>'+(DG&&td.c>=DG?"今日の目標を達成しました":"")+"</small></div>"+
+'<div class="card"><h3>文字数</h3>'+r("全作品の総文字数",L(tc))+r("今日書いた文字数",L(td.c))+r("今週(月曜始まり)",L(wk.c))+r("今月",L(mo.c))+r("1日平均(執筆した日)",days.length?L(Math.round(all.c/days.length)):"-")+"</div>"+
+'<div class="card"><h3>時間・速度</h3>'+r("累計執筆時間",fmtT(all.t))+r("今日の執筆時間",fmtT(td.t))+r("平均執筆速度",all.t>=5?(all.c/(all.t/60)).toFixed(1)+" 字/分":"-")+r("最長連続執筆日数",best+"日")+"</div>"+
+'<div class="card"><h3>過去7日間</h3><div class="bars">'+w7.map(function(x){return"<div><small>"+L(x.c)+'</small><i style="height:'+Math.round(x.c/mx*100)+'px"></i>'+x.l+"</div>"}).join("")+"</div></div></div>"+
+'<p class="mut">統計は、この機能の追加以降の入力から記録されます。「書いた文字数」は入力で増えた文字数で、削除しても減りません(貼り付けなど一度に100字超の増加は数えません)。</p>';
+$("pg-x").innerHTML=h}
+function showPage(p){if(PG==="w"){syncCur();saveStory(IDX.cur)}PG=p;document.querySelector("main").style.display=p==="w"?"":"none";$("pg-x").style.display=p==="w"?"none":"block";
+Array.prototype.forEach.call(document.querySelectorAll("#tabs button"),function(b){b.classList.toggle("on",b.dataset.p===p)});
+curRec=null;if(p==="x")renderStats();else if(p==="pl")renderPlot();else if(p==="w"){stats();highlight();renderSide()}else renderEnt(p)}
+$("tabs").addEventListener("click",function(e){var b=e.target.closest("button");if(b)showPage(b.dataset.p)});
+$("pg-x").addEventListener("input",function(e){var t=e.target;if(t.id==="pgq"){qs=t.value;$("pgl").innerHTML=listH(PG);return}if(!curRec)return;
+if(t.dataset.f!==undefined){curRec[t.dataset.f]=t.value;if(PG!=="pl"&&t.dataset.f===TY[PG].f[0][0]){var b=document.querySelector('#pgl .li[data-id="'+curRec.id+'"] b');if(b)b.textContent=t.value||"(無題)"}}
+else if(t.dataset.x!==undefined){curRec._x[+t.dataset.x][t.dataset.xf]=t.value}else return;touch()});
+$("pg-x").addEventListener("change",function(e){var t=e.target;if(t.id==="pgw"){openStory(t.value);showPage(PG)}else if(t.id==="dgi"){DG=parseInt(t.value)||0;ss("dg",DG);updDG();renderStats()}});
+$("pg-x").addEventListener("click",function(e){var t=e.target,li=t.closest(".li"),o=S[IDX.cur];
+if(li){sel[PG]=li.dataset.id;renderEnt(PG);return}
+if(t.id==="pgadd"){var T=TY[PG],r={id:uid()};r[T.f[0][0]]="";(o[T.k]=o[T.k]||[]).unshift(r);sel[PG]=r.id;qs="";touch();renderEnt(PG);var f=document.querySelector("#pg-x .fm input");if(f)f.focus();return}
+if(t.id==="pgdel"){var a=o[TY[PG].k],i=a.findIndex(function(r){return r.id===sel[PG]});if(i<0||!confirm("この項目を削除しますか?元に戻せません。"))return;a.splice(i,1);sel[PG]=a[0]?a[0].id:null;touch();renderEnt(PG);return}
+if(t.id==="xadd"){var n=prompt("項目名");if(!n||!n.trim())return;curRec._x.push({k:n.trim(),v:""});touch();renderPlot();return}
+if(t.classList.contains("xdel")){curRec._x.splice(+t.dataset.x,1);touch();renderPlot()}});
+updDG();
 var ac=null;
 function initAudio(){try{if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume()}catch(e){}}
 function beep(f,t,d){try{var o=ac.createOscillator(),g=ac.createGain(),T=ac.currentTime+t;o.frequency.value=f;g.gain.setValueAtTime(.0001,T);g.gain.exponentialRampToValueAtTime(.3,T+.03);g.gain.exponentialRampToValueAtTime(.0001,T+d);o.connect(g);g.connect(ac.destination);o.start(T);o.stop(T+d+.05)}catch(e){}}
