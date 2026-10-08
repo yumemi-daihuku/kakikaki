@@ -11,7 +11,7 @@ box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:en
 :root[data-theme="dark"]{--bg:#1b1a18;--fg:#e8e4dc;--card:#26241f;--bd:#3d3a32;--mut:#9a958a;--ac:#d9a066}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:"Hiragino Mincho ProN","Yu Mincho",serif}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--ff,"Hiragino Mincho ProN","Yu Mincho",serif)}
 header{display:flex;gap:8px;align-items:center;padding:10px 14px;border-bottom:1px solid var(--bd);flex-wrap:wrap}
 #title{flex:1;min-width:140px;font:700 18px inherit;font-family:inherit;background:transparent;color:var(--fg);border:0;border-bottom:1px dashed var(--bd);padding:4px}
 button,select,input[type=number]{font-family:inherit;background:var(--card);color:var(--fg);border:1px solid var(--bd);border-radius:6px;padding:5px 10px;cursor:pointer}
@@ -385,7 +385,7 @@ function rng(l,k,v,a,b,st){return"<label>"+l+'</label><input type="range" data-k
 function num(l,k,v){return"<label>"+l+'</label><input type="number" data-k="'+k+'" min="1" value="'+v+'">'}
 function renderCf(){$("pg-x").innerHTML='<h2 style="margin:0 0 10px;font-size:18px">設定</h2><div class="fm" style="max-width:520px">'+
 sel2("テーマ","theme",sg("theme",""),[["","自動(端末の設定に従う)"],["light","ライト"],["dark","ダーク"],["sepia","セピア"],["night","夜空"],["paper","紙"]])+
-sel2("フォント","ff",CF.ff,[["serif","明朝"],["gothic","ゴシック"],["maru","丸ゴシック"],["mono","等幅"]])+
+sel2("フォント(画面全体)","ff",CF.ff,[["serif","明朝"],["gothic","ゴシック"],["maru","丸ゴシック"],["mono","等幅"]])+
 rng("行間","lh",CF.lh,1.4,2.6,.1)+rng("文字間隔(em)","ls",CF.ls,0,.2,.01)+
 sel2("エディタ幅","ew",CF.ew,[["none","全幅"],["560","狭い(約560px)"],["720","標準(約720px)"],["900","広い(約900px)"]])+
 sel2("文字数の数え方","cm",CM,[["0","改行・空白も数える"],["1","改行・空白を除く"]])+
