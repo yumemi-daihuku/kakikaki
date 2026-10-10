@@ -80,6 +80,27 @@ body.focus #tabs{display:none}
 :root[data-theme="sepia"]{--bg:#f1e6d0;--fg:#3b2f22;--card:#f8eed9;--bd:#d6c4a2;--mut:#8a7658;--ac:#8a5a2b}
 :root[data-theme="night"]{--bg:#0f1626;--fg:#dbe4f5;--card:#18223a;--bd:#2a3a5c;--mut:#8da0c4;--ac:#7fb0ff}
 :root[data-theme="paper"]{--bg:#f4f1ea;--fg:#2b2b2b;--card:#fffdf8;--bd:#e0dccf;--mut:#8b8678;--ac:#9a6b3a}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.g2 .stat span{white-space:nowrap}
+@media(min-width:961px){
+body{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
+header,#tabs{flex:none}
+header{padding:6px 14px}#tabs{padding:4px 14px}
+main{flex:1;min-height:0;width:100%;align-items:stretch;padding-top:8px;padding-bottom:8px}
+#side{display:flex;flex-direction:column;min-height:0}
+#side #sl{flex:1;max-height:none;min-height:0}
+main>section{display:flex;flex-direction:column;min-height:0}
+#wrap{flex:1;height:auto;min-height:0;width:100%}
+aside{min-height:0;overflow:auto}
+aside .card{padding:8px 10px;margin-bottom:8px}
+aside .card h3{margin:0 0 4px;font-size:12px}
+aside .big{font-size:24px}
+aside .stat{font-size:13px;padding:1px 0}
+aside button,aside input[type=number]{padding:3px 8px;font-size:13px}
+#wd{font-size:18px}
+#wm{font-size:13px;line-height:1.5;margin:2px 0;max-height:5em;overflow:auto}
+#pg-x{flex:1;min-height:0;overflow:auto;width:100%}
+}
 body.focus aside,body.focus #side,body.focus header .opt{display:none}
 body.focus main{grid-template-columns:1fr}
 </style>
@@ -111,28 +132,24 @@ body.focus main{grid-template-columns:1fr}
 <div class="big" id="tm">25:00</div>
 <div class="bar" style="margin:2px 0 6px"><i id="tb" style="width:100%"></i></div>
 <div class="row" style="margin:4px 0"><input type="number" id="tmin" min="1" max="180" style="width:64px"><small>分</small><button class="pz" data-m="10">10</button><button class="pz" data-m="25">25</button><button class="pz" data-m="45">45</button></div>
-<label class="mut"><input type="checkbox" id="pomo"> ポモドーロ(集中⇄休憩)</label>
-<div class="row" style="margin-top:6px"><button id="go">▶ 開始</button><button id="rs">リセット</button></div></div>
-<div class="card"><h3>✍ 執筆速度(常時計測)</h3>
-<div class="stat"><span>速度</span><b><span id="spm">0</span> 字/分</b></div>
-<div class="stat"><span>時速換算</span><b><span id="sph">0</span> 字/時</b></div>
-<div class="stat"><span>今回書いた量</span><b><span id="add">0</span> 字</b></div>
-<div class="stat"><span>執筆時間</span><b id="act">00:00</b></div>
-<small>入力が30秒以上空いた間は執筆時間に含めません。一度に100字超の増加(貼り付け)は書いた量に数えません。</small>
-<div class="row" style="margin-top:6px"><button id="rsp">記録をリセット</button></div></div>
-<div class="card"><h3>📊 文字数</h3>
-<div class="stat"><span>このシーン</span><b id="c1">0</b></div>
-<div class="stat"><span>作品全体</span><b id="c5">0</b></div>
-<div class="stat"><span>読了時間(作品)</span><b id="c6">-</b></div>
-<div class="stat"><span>空白・改行除く</span><b id="c2">0</b></div>
-<div class="stat"><span>原稿用紙(400字)</span><b id="c3">0</b></div>
-<div class="stat"><span>段落数</span><b id="c4">0</b></div>
-<div class="row" style="margin-top:6px"><small>目標</small><input type="number" id="goal" min="0" step="100" style="width:90px"><small>字</small></div>
-<div class="bar"><i id="pb"></i></div><small id="pt"></small><br><small id="dgt" class="mut"></small></div>
+<div class="row" style="margin-top:4px"><button id="go">▶ 開始</button><button id="rs">リセット</button><label class="mut" title="集中と休憩を交互に切り替えます"><input type="checkbox" id="pomo"> ポモドーロ</label></div></div>
+<div class="card"><h3 title="入力が30秒以上空いた間は執筆時間に含めません。一度に100字超の増加(貼り付け)は書いた量に数えません。">✍ 執筆速度(常時計測)</h3>
+<div class="stat"><span>速度</span><b><span id="spm">0</span> 字/分 (<span id="sph">0</span> 字/時)</b></div>
+<div class="stat"><span>書いた量 / 執筆時間</span><b><span id="add">0</span> 字 / <span id="act">00:00</span></b></div>
+<div class="row" style="margin-top:4px"><button id="rsp">記録をリセット</button></div></div>
+<div class="card"><h3>📊 文字数</h3><div class="g2">
+<div class="stat"><span>シーン</span><b id="c1">0</b></div>
+<div class="stat"><span>全体</span><b id="c5">0</b></div>
+<div class="stat"><span>読了(全体)</span><b id="c6">-</b></div>
+<div class="stat"><span>空白除く</span><b id="c2">0</b></div>
+<div class="stat"><span>原稿用紙(枚)</span><b id="c3">0</b></div>
+<div class="stat"><span>段落</span><b id="c4">0</b></div>
+</div><div class="row" style="margin-top:4px"><small>目標</small><input type="number" id="goal" min="0" step="100" style="width:90px"><small>字</small></div>
+<div class="bar"><i id="pb"></i></div><small id="pt"></small> <small id="dgt" class="mut"></small></div>
 <div class="card">
-<div class="row" style="justify-content:space-between;margin-bottom:6px"><h3 style="margin:0">📖 今日の言葉</h3><span class="row" style="gap:4px"><button id="pv" style="padding:5px 8px">←</button><button id="nx" style="padding:5px 8px">→</button><button id="wmg" style="padding:5px 8px">一覧</button></span></div>
+<div class="row" style="justify-content:space-between;margin-bottom:6px"><h3 style="margin:0" title="30秒ごとに自動で切り替わります">📖 今日の言葉</h3><span class="row" style="gap:4px"><button id="pv" style="padding:5px 8px">←</button><button id="nx" style="padding:5px 8px">→</button><button id="wmg" style="padding:5px 8px">一覧</button></span></div>
 <div id="wd"></div><div id="wm"></div>
-<small>30秒ごとに自動で切り替わります</small></div>
+</div>
 </aside>
 </main>
 <div id="pg-x" style="display:none"></div>
