@@ -415,17 +415,19 @@ num("読書速度(字/分)","rsp",RSP)+num("ポモドーロの休憩(分)","brk"
 $("pg-x").addEventListener("input",function(e){var t=e.target,k=t.dataset.k;if(!k)return;var v=t.value;
 if(k==="theme")setTheme(v);else if(k==="cm"){CM=+v;ss("cm",v);stats();renderSide()}else if(k==="rsp"){RSP=Math.max(100,parseInt(v)||500);ss("rsp",RSP);stats()}else if(k==="brk"){BRK=Math.max(1,parseInt(v)||5);ss("brk",BRK)}
 else{CF[k]=(k==="lh"||k==="ls")?parseFloat(v):v;ss("cf",JSON.stringify(CF));applyCf()}});
+function indChk(t,sid,sn,out){var p=0;t.split("\n").forEach(function(l){if(l.trim()&&!/^[\u3000 \t]/.test(l)&&!/^[「『（(【［〈《“"―…]/.test(l)&&out.length<300)out.push({sid:sid,pos:p,len:1,sn:sn,m:"段落の頭に字下げ(全角スペース)がありません(「 『 （ などで始まる行は対象外)"});p+=l.length+1})}
+$("pg-x").addEventListener("change",function(e){if(e.target.id==="chi")ss("ci",e.target.checked?"1":"0")});
 function met(t){var ns=[...t.replace(/\s/g,"")].length,sn=t.split(/[。！？!?]+/).filter(function(x){return x.trim()}).length;return{a:[...t].length,ns:ns,nl:(t.match(/\n/g)||[]).length,pa:t.split(/\n+/).filter(function(x){return x.trim()}).length,li:t?t.split("\n").length:0,av:sn?(ns/sn).toFixed(1):"-"}}
 function renderAn(){syncCur();var o=S[IDX.cur],a=met(find(o,o.cs).x),b=met(allSc(o).map(function(s){return s.x}).join("\n")),R=function(l,k){return'<div class="stat"><span>'+l+"</span><b>"+a[k]+"</b><b>"+b[k]+"</b></div>"};
 $("pg-x").innerHTML=pgHead("文章分析")+'<div class="cg"><div class="card"><h3>文字数の詳細(左:このシーン / 右:作品全体)</h3>'+R("総文字数","a")+R("空白・改行を除く","ns")+R("改行数","nl")+R("段落数","pa")+R("行数","li")+R("一文の平均文字数","av")+'<div class="stat"><span>読了時間の目安</span><b>'+Math.max(1,Math.round(a.ns/RSP))+"分</b><b>"+Math.max(1,Math.round(b.ns/RSP))+"分</b></div></div>"+
-'<div class="card"><h3>誤字・表記ゆれチェック(作品全体)</h3><button id="chk">チェックを実行</button><div class="mut" style="margin-top:6px">自動修正はしません。「問題の可能性」を警告するだけです。意図的な表現は無視してください。</div></div></div><div id="chr" style="margin-top:12px"></div>'}
+'<div class="card"><h3>誤字・表記ゆれチェック(作品全体)</h3><button id="chk">チェックを実行</button> <label class="mut"><input type="checkbox" id="chi"'+(sg("ci","1")==="1"?" checked":"")+'> 字下げ(改行後の全角空白)の漏れも検出</label><div class="mut" style="margin-top:6px">自動修正はしません。「問題の可能性」を警告するだけです。意図的な表現は無視してください。</div></div></div><div id="chr" style="margin-top:12px"></div>'}
 var PR=[[/下さい/g,"「下さい」は「ください」とひらくのが一般的です"],[/出来(る|ます|ない|た|れば|なかった)/g,"「出来る」は「できる」とひらくのが一般的です"],[/全然(大丈夫|平気|いい|良い|好き|美味しい|楽しい)/g,"「全然」は本来、否定と併用します(口語表現なら問題ありません)"],[/[、。]{2,}/g,"句読点が連続しています"],[/([!！?？…ー〜~・])\1{3,}/g,"同じ記号が4個以上連続しています"],[/([ぁ-んァ-ヶ一-龠]{2,4})\1{2,}/g,"同じ語句が3回以上連続しています"]];
 var PRS=[["分かる","わかる"],["下さい","ください"],["出来る","できる"],["有難う","ありがとう"],["沢山","たくさん"],["一緒","いっしょ"],["綺麗","きれい"]];
 function brkChk(t,sid,sn,out){var P={"「":"」","『":"』","（":"）","(":")","【":"】","［":"］"},C={},st=[];Object.keys(P).forEach(function(k){C[P[k]]=k});
 for(var i=0;i<t.length;i++){var c=t[i];if(P[c])st.push([c,i]);else if(C[c]){if(!st.length||st[st.length-1][0]!==C[c])out.push({sid:sid,pos:i,len:1,sn:sn,m:"閉じ括弧「"+c+"」の対応がずれているか、開き括弧がない可能性があります"});else st.pop()}}
 st.forEach(function(x){out.push({sid:sid,pos:x[1],len:1,sn:sn,m:"括弧「"+x[0]+"」が閉じられていない可能性があります"})})}
 function runCheck(){var o=S[IDX.cur],out=[],T={};allSc(o).forEach(function(s){T[s.id]=s.id===o.cs?ed.value:s.x});
-allSc(o).forEach(function(s){var t=T[s.id];PR.forEach(function(r){var re=new RegExp(r[0].source,"g"),m;while((m=re.exec(t))&&out.length<300){out.push({sid:s.id,pos:m.index,len:m[0].length,sn:s.t,m:r[1]})}});brkChk(t,s.id,s.t,out)});
+allSc(o).forEach(function(s){var t=T[s.id];PR.forEach(function(r){var re=new RegExp(r[0].source,"g"),m;while((m=re.exec(t))&&out.length<300){out.push({sid:s.id,pos:m.index,len:m[0].length,sn:s.t,m:r[1]})}});brkChk(t,s.id,s.t,out);if($("chi").checked)indChk(t,s.id,s.t,out)});
 var all=Object.keys(T).map(function(k){return T[k]}).join("\n");
 PRS.forEach(function(p){var a=all.split(p[0]).length-1,b=all.split(p[1]).length-1;if(a&&b){var sm=a<b?p[0]:p[1];allSc(o).some(function(s){var i=T[s.id].indexOf(sm);if(i>=0){out.push({sid:s.id,pos:i,len:sm.length,sn:s.t,m:"表記ゆれの可能性: 「"+p[0]+"」("+a+"回)と「"+p[1]+"」("+b+"回)が混在しています"});return true}})}});
 return{out:out.slice(0,300),T:T}}
