@@ -101,6 +101,7 @@ aside button,aside input[type=number]{padding:3px 8px;font-size:13px}
 #wm{font-size:13px;line-height:1.5;margin:2px 0;max-height:5em;overflow:auto}
 #pg-x{flex:1;min-height:0;overflow:auto;width:100%}
 }
+#hl,#ed{-webkit-text-size-adjust:100%;text-size-adjust:100%;tab-size:4;font-kerning:none}
 body.focus aside,body.focus #side,body.focus header .opt{display:none}
 body.focus main{grid-template-columns:1fr}
 </style>
@@ -121,7 +122,7 @@ body.focus main{grid-template-columns:1fr}
 <section>
 <div id="fr" class="row" style="display:none;margin-bottom:8px"><input type="text" id="fi" placeholder="検索" style="width:130px"><input type="text" id="ri" placeholder="置換後" style="width:130px"><button id="fp">前へ</button><button id="fn">次へ</button><button id="f1">置換</button><button id="fa">すべて置換</button><small id="fc"></small></div>
 <div id="wrap"><div id="hl"></div><textarea id="ed" placeholder="ここに物語を書き始めましょう…" spellcheck="false"></textarea></div>
-<div class="row" style="margin-top:8px"><label class="mut"><input type="checkbox" id="hlOn" checked> 重複語ハイライト(200字以内に2回以上)</label></div>
+<div class="row" style="margin-top:8px"><label class="mut"><input type="checkbox" id="hlOn" checked> 重複語ハイライト</label><span class="mut">範囲</span><input type="number" id="hr" min="20" max="2000" step="10" style="width:76px"><span class="mut">字以内に2回以上</span></div>
 <div class="row" style="margin-top:6px"><input type="text" id="exi" placeholder="除外する語(複数は空白区切り)" style="width:210px" maxlength="60"><button id="exa">除外に追加</button></div>
 <div id="exl" class="mut" style="margin-top:4px;line-height:2"></div>
 <div id="legend" class="mut" style="margin-top:4px;line-height:1.8"></div>
@@ -201,6 +202,7 @@ var th=sg("theme","");if(th)document.documentElement.setAttribute("data-theme",t
 var fs=sg("fs","17");$("fs").value=fs;document.documentElement.style.setProperty("--fs",fs+"px");
 $("hlOn").checked=sg("hlOn","1")==="1";
 var EX=[];try{EX=JSON.parse(sg("ex","[]"))}catch(e){}if(!Array.isArray(EX))EX=[];
+var HR=Math.min(2000,Math.max(20,parseInt(sg("hr","200"))||200));
 function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
 // 単語分割
 var seg=null;try{seg=new Intl.Segmenter("ja",{granularity:"word"})}catch(e){}
@@ -216,13 +218,13 @@ if($("hlOn").checked){
 var by={};tokens(text).forEach(function(t){(by[t.w]=by[t.w]||[]).push(t)});
 var ci=0;
 Object.keys(by).forEach(function(w){if(EX.indexOf(w)>=0)return;var L=by[w],hit=[];
-for(var i=1;i<L.length;i++){if(L[i].e-L[i-1].s<=200){hit.push(L[i-1],L[i])}}
+for(var i=1;i<L.length;i++){if(L[i].e-L[i-1].s<=HR){hit.push(L[i-1],L[i])}}
 if(hit.length){var c=PAL[ci%PAL.length];ci++;words[w]=c;hit.forEach(function(t){ranges.push({s:t.s,e:t.e,c:c})})}});
 ranges.sort(function(a,b){return a.s-b.s});
 }
 var html="",p=0;
 ranges.forEach(function(r){if(r.s<p)return;html+=esc(text.slice(p,r.s))+'<mark style="background:'+r.c+'">'+esc(text.slice(r.s,r.e))+"</mark>";p=r.e});
-html+=esc(text.slice(p))+"\n";hl.innerHTML=html;hl.scrollTop=ed.scrollTop;
+html+=esc(text.slice(p))+"\n";hl.style.paddingRight=(14+ed.offsetWidth-ed.clientWidth)+"px";hl.innerHTML=html;hl.scrollTop=ed.scrollTop;
 var lg=Object.keys(words).slice(0,12).map(function(w){return '<span class="lg" data-w="'+encodeURIComponent(w)+'" title="クリックで除外語に追加" style="background:'+words[w]+';padding:1px 6px;border-radius:3px;margin-right:4px;cursor:pointer">'+esc(w)+"</span>"}).join("");
 $("legend").innerHTML=lg;
 }
@@ -318,11 +320,13 @@ var ht=null;
 ed.addEventListener("input",function(){
 var n=[...ed.value].length,d=n-prevLen,now=Date.now();if(d>0&&d<=100){added+=d;logAdd(d,0)}if(lastIn){var gp=Math.min((now-lastIn)/1000,IDLE);active+=gp;logAdd(0,gp)}lastIn=now;prevLen=n;updDG();
 stats();speed();later();clearTimeout(ht);ht=setTimeout(highlight,120)});
+window.addEventListener("resize",function(){highlight()});
 ed.addEventListener("scroll",function(){hl.scrollTop=ed.scrollTop});
 $("title").addEventListener("input",later);
 $("goal").addEventListener("input",function(){stats();later()});
 $("hlOn").addEventListener("change",function(){ss("hlOn",this.checked?"1":"0");highlight()});
 $("fs").addEventListener("change",function(){ss("fs",this.value);document.documentElement.style.setProperty("--fs",this.value+"px");highlight()});
+$("hr").value=HR;$("hr").addEventListener("change",function(){HR=Math.min(2000,Math.max(20,parseInt(this.value)||200));this.value=HR;ss("hr",HR);highlight()});
 function saveEx(){ss("ex",JSON.stringify(EX))}
 function renderEx(){$("exl").innerHTML=EX.length?"除外中(クリックで解除): "+EX.map(function(w,i){return '<span class="ex" data-i="'+i+'" style="border:1px solid var(--bd);border-radius:12px;padding:1px 8px;margin-right:4px;cursor:pointer">'+esc(w)+" ×</span>"}).join(""):""}
 function addEx(w){w=w.trim();if(!w||EX.indexOf(w)>=0)return;EX.push(w);saveEx();renderEx();highlight()}
