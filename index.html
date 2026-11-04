@@ -102,6 +102,16 @@ aside button,aside input[type=number]{padding:3px 8px;font-size:13px}
 #pg-x{flex:1;min-height:0;overflow:auto;width:100%}
 }
 #hl,#ed{-webkit-text-size-adjust:100%;text-size-adjust:100%;tab-size:4;font-kerning:none}
+#sq2{font-family:inherit;background:var(--card);color:var(--fg);border:1px solid var(--bd);border-radius:6px;padding:5px}
+#sres{max-height:260px;overflow:auto}
+.hit{padding:4px 6px;border-bottom:1px solid var(--bd);cursor:pointer;font-size:12px;line-height:1.5}
+.hit:hover{background:var(--bg)}.hit small{color:var(--mut)}.hit mark{background:rgba(255,200,0,.5);color:inherit;border-radius:2px}
+@media(min-width:961px){
+aside{display:flex;flex-direction:column}
+aside>.card{flex:none}
+aside>#scard{flex:1 1 150px;min-height:150px;display:flex;flex-direction:column}
+#sres{max-height:none;flex:1;min-height:0}
+}
 body.focus aside,body.focus #side,body.focus header .opt{display:none}
 body.focus main{grid-template-columns:1fr}
 </style>
@@ -151,6 +161,10 @@ body.focus main{grid-template-columns:1fr}
 <div class="row" style="justify-content:space-between;margin-bottom:6px"><h3 style="margin:0" title="30秒ごとに自動で切り替わります">📖 今日の言葉</h3><span class="row" style="gap:4px"><button id="pv" style="padding:5px 8px">←</button><button id="nx" style="padding:5px 8px">→</button><button id="wmg" style="padding:5px 8px">一覧</button></span></div>
 <div id="wd"></div><div id="wm"></div>
 </div>
+<div class="card" id="scard"><h3>🔍 本文検索(作品全体)</h3>
+<input type="text" id="sq2" placeholder="語句を入力" style="width:100%">
+<div class="mut" id="sc2" style="font-size:12px;margin:3px 0"></div>
+<div id="sres"></div></div>
 </aside>
 </main>
 <div id="pg-x" style="display:none"></div>
@@ -256,7 +270,7 @@ if(!on)return;
 o.ch.forEach(function(c){h+='<div class="ch">▸ '+esc(c.t)+' <small>'+cn(c)+'字</small>'+ab("sa",c.id,"","＋")+ab("rn",c.id,"","✎")+ab("up",c.id,"","▲")+ab("dn",c.id,"","▼")+ab("dc",c.id,"","✕")+"</div>";
 c.sc.forEach(function(s){var cur=s.id===o.cs;h+='<div class="sc'+(cur?" on":"")+'" data-s="'+s.id+'">'+esc(s.t)+' <small>'+sl(s)+"字</small>"+(cur?ab("rn",c.id,s.id,"✎")+ab("up",c.id,s.id,"▲")+ab("dn",c.id,s.id,"▼")+ab("dp",c.id,s.id,"⧉")+ab("ds",c.id,s.id,"✕"):"")+"</div>"})})});
 $("sl").innerHTML=h}
-function loadScene(){var o=S[IDX.cur],s=find(o,o.cs);ed.value=s.x;prevLen=[...s.x].length;ed.scrollTop=0;stats();highlight();renderSide()}
+function loadScene(){var o=S[IDX.cur],s=find(o,o.cs);ed.value=s.x;prevLen=[...s.x].length;ed.scrollTop=0;stats();highlight();renderSide();gsearch()}
 function openStory(id,ns){clearTimeout(st);if(!ns&&S[IDX.cur]){snap();syncCur();saveStory(IDX.cur)}IDX.cur=id;saveIdx();var o=S[id];$("title").value=o.title||"";$("goal").value=o.goal||"";loadScene();$("saved").textContent="切り替えました"}
 function selScene(sid){snap();syncCur();S[IDX.cur].cs=sid;saveStory(IDX.cur);loadScene()}
 function mv(a,i,d){var j=i+d;if(j<0||j>=a.length)return;var t=a[i];a[i]=a[j];a[j]=t}
@@ -437,6 +451,19 @@ r.out.forEach(function(x){var tx=r.T[x.sid];h+='<div class="li wn" data-s="'+x.s
 var w=t.closest(".wn");if(!w)return;var sid=w.dataset.s,pos=+w.dataset.p,len=+w.dataset.l;if(sid!==S[IDX.cur].cs)selScene(sid);showPage("w");ed.focus();ed.setSelectionRange(pos,pos+len);reveal(pos)});
 document.addEventListener("keydown",function(e){if((e.ctrlKey||e.metaKey)&&e.key==="Enter"){e.preventDefault();var o=S[IDX.cur],c=o.ch.filter(function(c){return c.sc.some(function(s){return s.id===o.cs})})[0];if(c){showPage("w");act("sa",c.id)}}
 if(e.key==="Escape"&&document.body.classList.contains("focus"))$("focus").click()});
+// 本文検索(作品全体)
+var sdeb=null;
+function gsearch(){var q=$("sq2").value,o=S[IDX.cur],h="",n=0;
+if(!q){$("sres").innerHTML="";$("sc2").textContent="";return}
+var ql=q.toLowerCase();
+allSc(o).forEach(function(s){var t=s.id===o.cs?ed.value:s.x,tl=t.toLowerCase(),i=0;
+while((i=tl.indexOf(ql,i))>=0){if(n<300){var a=t.slice(Math.max(0,i-12),i).replace(/\n/g," "),m=t.slice(i,i+q.length),b=t.slice(i+q.length,i+q.length+18).replace(/\n/g," ");
+h+='<div class="hit" data-s="'+s.id+'" data-p="'+i+'" data-l="'+q.length+'"><small>['+esc(s.t)+"]</small> …"+esc(a)+"<mark>"+esc(m)+"</mark>"+esc(b)+"…</div>"}n++;i+=Math.max(1,q.length)}});
+$("sc2").textContent=n?n+"件"+(n>300?"(先頭300件を表示)":""):"見つかりません";$("sres").innerHTML=h}
+$("sq2").addEventListener("input",function(){clearTimeout(sdeb);sdeb=setTimeout(gsearch,150)});
+$("sq2").addEventListener("keydown",function(e){if(e.key==="Enter"){var f=$("sres").querySelector(".hit");if(f)f.click()}});
+ed.addEventListener("input",function(){if($("sq2").value){clearTimeout(sdeb);sdeb=setTimeout(gsearch,400)}});
+$("sres").addEventListener("click",function(e){var el=e.target.closest(".hit");if(!el)return;var sid=el.dataset.s,pos=+el.dataset.p,len=+el.dataset.l;if(sid!==S[IDX.cur].cs)selScene(sid);ed.focus();ed.setSelectionRange(pos,pos+len);reveal(pos)});
 var ac=null;
 function initAudio(){try{if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume()}catch(e){}}
 function beep(f,t,d){try{var o=ac.createOscillator(),g=ac.createGain(),T=ac.currentTime+t;o.frequency.value=f;g.gain.setValueAtTime(.0001,T);g.gain.exponentialRampToValueAtTime(.3,T+.03);g.gain.exponentialRampToValueAtTime(.0001,T+d);o.connect(g);g.connect(ac.destination);o.start(T);o.stop(T+d+.05)}catch(e){}}
