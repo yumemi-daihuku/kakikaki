@@ -123,6 +123,11 @@ aside>#scard{flex:1 1 150px;min-height:150px;display:flex;flex-direction:column}
 #rtxt{flex:1;min-height:0;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--ff,inherit);font-size:var(--fs,17px);line-height:var(--lh,1.9);letter-spacing:var(--ls,0);padding:6px 8px;color:var(--fg)}
 @media(max-width:960px){#ed2{flex-direction:column}#ref{height:34vh}}
 @media(min-width:961px){#ed2{flex:1;min-height:0}#ref{height:auto}}
+main{max-width:none}
+@media(min-width:961px){main{grid-template-columns:clamp(260px,18vw,400px) minmax(0,1fr) clamp(280px,22vw,440px);padding-left:16px;padding-right:16px}}
+#pg-x{max-width:none}
+.eg{grid-template-columns:clamp(240px,20vw,360px) minmax(0,1fr)}
+@media(max-width:760px){.eg{grid-template-columns:1fr}}
 body.focus aside,body.focus #side,body.focus header .opt{display:none}
 body.focus main{grid-template-columns:1fr}
 </style>
@@ -382,7 +387,7 @@ function renderEnt(ty){var o=S[IDX.cur],T=TY[ty],arr=o[T.k]=o[T.k]||[],rec=arr.f
 var h=pgHead(T.t)+'<div class="eg"><div><div class="row" style="margin-bottom:8px;flex-wrap:nowrap"><input type="text" id="pgq" placeholder="検索" value="'+qa(qs)+'"><button id="pgadd">＋ 追加</button></div><div id="pgl">'+listH(ty)+'</div></div><div class="fm">';
 if(rec){T.f.forEach(function(f){h+=fh(f,rec[f[0]])});if(ty==="wd"){var cs=CATS.slice();arr.forEach(function(r){if(r["カテゴリ"]&&cs.indexOf(r["カテゴリ"])<0)cs.push(r["カテゴリ"])});h+='<datalist id="cl">'+cs.map(function(c){return'<option value="'+qa(c)+'">'}).join("")+"</datalist>"}h+='<div style="margin-top:14px"><button id="pgdel">この項目を削除</button></div>'}else h+='<div class="mut">「＋ 追加」から作成してください。</div>';
 $("pg-x").innerHTML=h+"</div></div>"}
-function renderPlot(){var o=S[IDX.cur],p=o.pl=o.pl||{};p._x=p._x||[];curRec=p;var h=pgHead("プロット")+'<div class="fm" style="max-width:760px">';
+function renderPlot(){var o=S[IDX.cur],p=o.pl=o.pl||{};p._x=p._x||[];curRec=p;var h=pgHead("プロット")+'<div class="fm" style="max-width:1100px">';
 PF.forEach(function(f){h+=fh(f,p[f[0]])});
 p._x.forEach(function(x,i){h+='<label><input type="text" data-x="'+i+'" data-xf="k" value="'+qa(x.k)+'" style="width:60%"> <span class="ab xdel" data-x="'+i+'">✕ 削除</span></label><textarea rows="3" data-x="'+i+'" data-xf="v">'+esc(x.v)+"</textarea>"});
 $("pg-x").innerHTML=h+'<div style="margin-top:14px"><button id="xadd">＋ 項目を追加</button></div></div>'}
