@@ -140,7 +140,7 @@ body.focus main{grid-template-columns:1fr}
 <button id="bfind">検索</button><button id="bhist">履歴</button><button id="theme">🌓</button>
 </span>
 <button id="focus">集中モード</button>
-<button id="copy">全文コピー</button>
+<button id="copy">シーンをコピー</button><button id="copyall">作品全体をコピー</button>
 </header>
 <nav id="tabs"><button data-p="w" class="on">✍ 執筆</button><button data-p="x">📊 統計</button><button data-p="ch">👤 登場人物</button><button data-p="wd">🌏 設定資料</button><button data-p="tm">📖 用語辞典</button><button data-p="pl">🧭 プロット</button><button data-p="an">📝 分析</button><button data-p="cf">⚙ 設定</button></nav>
 <main>
@@ -148,7 +148,7 @@ body.focus main{grid-template-columns:1fr}
 <section>
 <div id="dbar"><span class="mut">稿:</span><span id="dtabs" class="row"></span><button id="dnew">＋ 新しい稿</button></div>
 <div id="fr" class="row" style="display:none;margin-bottom:8px"><input type="text" id="fi" placeholder="検索" style="width:130px"><input type="text" id="ri" placeholder="置換後" style="width:130px"><button id="fp">前へ</button><button id="fn">次へ</button><button id="f1">置換</button><button id="fa">すべて置換</button><small id="fc"></small></div>
-<div id="ed2"><div id="ref"><div class="row" style="margin-bottom:6px"><b id="rtitle" style="font-size:13px"></b></div><div class="row" style="margin-bottom:6px"><button id="rcopy">現在の稿にコピー</button><button id="rdel">この稿を削除</button><button id="rx">閉じる</button><label class="mut"><input type="checkbox" id="rsync" checked> スクロール連動</label></div><div id="rtxt"></div></div><div id="wrap"><div id="hl"></div><textarea id="ed" placeholder="ここに物語を書き始めましょう…" spellcheck="false"></textarea></div></div>
+<div id="ed2"><div id="ref"><div class="row" style="margin-bottom:6px"><b id="rtitle" style="font-size:13px"></b></div><div class="row" style="margin-bottom:6px"><button id="rcopy">現在の稿にコピー</button><button id="rdel">この稿を削除</button><button id="rx">閉じる</button><label class="mut"><input type="checkbox" id="rsync"> スクロール連動</label></div><div id="rtxt"></div></div><div id="wrap"><div id="hl"></div><textarea id="ed" placeholder="ここに物語を書き始めましょう…" spellcheck="false"></textarea></div></div>
 <div class="row" style="margin-top:8px"><label class="mut"><input type="checkbox" id="hlOn" checked> 重複語ハイライト</label><span class="mut">範囲</span><input type="number" id="hr" min="20" max="2000" step="10" style="width:76px"><span class="mut">字以内に2回以上</span></div>
 <div class="row" style="margin-top:6px"><input type="text" id="exi" placeholder="除外する語(複数は空白区切り)" style="width:210px" maxlength="60"><button id="exa">除外に追加</button></div>
 <div id="exl" class="mut" style="margin-top:4px;line-height:2"></div>
@@ -199,7 +199,38 @@ body.focus main{grid-template-columns:1fr}
 <div class="mut" style="margin-top:6px">行をタップすると「今日の言葉」に表示します。</div>
 </div></div>
 <script type="application/json" id="wjson">
-[]
+[
+  {"word": "逡巡", "reading": "しゅんじゅん", "meaning": "ためらって決断できずにいること。"},
+  {"word": "刹那", "reading": "せつな", "meaning": "きわめて短い時間。一瞬。"},
+  {"word": "邂逅", "reading": "かいこう", "meaning": "思いがけなく出会うこと。"},
+  {"word": "揺蕩う", "reading": "たゆたう", "meaning": "ゆらゆらと揺れ動く。ただよう。"},
+  {"word": "黄昏", "reading": "たそがれ", "meaning": "夕暮れ時。盛りを過ぎた頃のたとえにも使う。"},
+  {"word": "暁", "reading": "あかつき", "meaning": "夜明け前後の、空がほのかに明るくなる頃。"},
+  {"word": "憧憬", "reading": "しょうけい", "meaning": "あこがれること。"},
+  {"word": "寂寥", "reading": "せきりょう", "meaning": "ひっそりとして寂しいさま。"},
+  {"word": "朧", "reading": "おぼろ", "meaning": "ぼんやりとかすんで、はっきりしないさま。"},
+  {"word": "蒼穹", "reading": "そうきゅう", "meaning": "青く澄んだ大空。"},
+  {"word": "微睡む", "reading": "まどろむ", "meaning": "うとうとと浅く眠る。"},
+  {"word": "慟哭", "reading": "どうこく", "meaning": "悲しみのあまり、声をあげて泣くこと。"},
+  {"word": "瞑目", "reading": "めいもく", "meaning": "目を閉じること。安らかに死ぬことも指す。"},
+  {"word": "嗚咽", "reading": "おえつ", "meaning": "声をつまらせて泣くこと。"},
+  {"word": "彷徨う", "reading": "さまよう", "meaning": "あてもなく歩き回る。"},
+  {"word": "面影", "reading": "おもかげ", "meaning": "記憶に残る顔かたち。昔の名残。"},
+  {"word": "逢魔が時", "reading": "おうまがとき", "meaning": "夕暮れの薄暗い頃。魔物に出会いやすい時刻とされた。"},
+  {"word": "暗澹", "reading": "あんたん", "meaning": "暗く、見通しが立たないさま。"},
+  {"word": "訥々", "reading": "とつとつ", "meaning": "口ごもりながら、つかえつつ話すさま。"},
+  {"word": "翳り", "reading": "かげり", "meaning": "光がさえぎられて暗くなること。勢いが衰える兆し。"},
+  {"word": "仄か", "reading": "ほのか", "meaning": "かすかで、はっきりしないさま。"},
+  {"word": "凪", "reading": "なぎ", "meaning": "風がやんで、海面が静かになること。"},
+  {"word": "木漏れ日", "reading": "こもれび", "meaning": "木の葉の間からさし込む日の光。"},
+  {"word": "燦然", "reading": "さんぜん", "meaning": "きらびやかに輝くさま。"},
+  {"word": "静謐", "reading": "せいひつ", "meaning": "静かで落ち着いていること。"},
+  {"word": "慈雨", "reading": "じう", "meaning": "日照りの後に降る恵みの雨。"},
+  {"word": "些細", "reading": "ささい", "meaning": "ごくわずかで、取るに足りないさま。"},
+  {"word": "茫然", "reading": "ぼうぜん", "meaning": "あっけにとられ、我を忘れるさま。"},
+  {"word": "蠢く", "reading": "うごめく", "meaning": "虫などがもぞもぞと動く。"},
+  {"word": "薫風", "reading": "くんぷう", "meaning": "初夏に若葉の上を吹き渡る爽やかな風。"}
+]
 </script>
 <script>
 (function(){
@@ -498,8 +529,15 @@ $("nd0").onclick=function(){newDraft(false)};$("nd1").onclick=function(){newDraf
 document.addEventListener("keydown",function(e){if(e.key==="Escape")$("nd").classList.remove("on")});
 $("rcopy").onclick=function(){var o=S[IDX.cur],s=find(o,o.cs),r=(s.dr||[])[refIdx];if(!r)return;if(!confirm("現在の稿をこの内容で上書きします。よろしいですか?\n(上書き前の内容は「履歴」に残ります)"))return;snap();ed.value=r.x;ed.dispatchEvent(new Event("input"))};
 $("rdel").onclick=function(){var o=S[IDX.cur],s=find(o,o.cs);if(!s.dr||!s.dr[refIdx])return;if(!confirm("第"+(refIdx+1)+"稿を削除します。元に戻せません。よろしいですか?"))return;s.dr.splice(refIdx,1);refIdx=-1;saveStory(IDX.cur);renderDraft();renderSide()};
+$("rsync").checked=sg("rsync","0")==="1";$("rsync").onchange=function(){ss("rsync",this.checked?"1":"0")};
 ed.addEventListener("scroll",function(){if(refIdx<0||!$("rsync").checked)return;var t=$("rtxt"),r=ed.scrollTop/Math.max(1,ed.scrollHeight-ed.clientHeight);t.scrollTop=r*(t.scrollHeight-t.clientHeight)});
 renderDraft();
+// 作品全体コピー(過去の稿は除く)
+function workText(){syncCur();var o=S[IDX.cur],t=(o.title||"").trim(),out=t?t+"\n\n":"";
+o.ch.forEach(function(c){out+="■ "+c.t+"\n\n";c.sc.forEach(function(s){out+="◆ "+s.t+"\n\n"+s.x.replace(/\s+$/,"")+"\n\n"})});return out.replace(/\s+$/,"")+"\n"}
+$("copyall").onclick=function(){var b=this,txt=workText();function ok(){b.textContent="コピーしました";setTimeout(function(){b.textContent="作品全体をコピー"},1500)}
+function fb(){var a=document.createElement("textarea");a.value=txt;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){b.textContent="コピーできませんでした"}a.remove()}
+try{navigator.clipboard.writeText(txt).then(ok,fb)}catch(e){fb()}};
 var ac=null;
 function initAudio(){try{if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume()}catch(e){}}
 function beep(f,t,d){try{var o=ac.createOscillator(),g=ac.createGain(),T=ac.currentTime+t;o.frequency.value=f;g.gain.setValueAtTime(.0001,T);g.gain.exponentialRampToValueAtTime(.3,T+.03);g.gain.exponentialRampToValueAtTime(.0001,T+d);o.connect(g);g.connect(ac.destination);o.start(T);o.stop(T+d+.05)}catch(e){}}
@@ -516,7 +554,7 @@ Array.prototype.forEach.call(document.querySelectorAll(".pz"),function(b){b.oncl
 $("rsp").onclick=function(){if(!confirm("執筆速度の記録をリセットしますか?(本文は消えません)"))return;active=0;added=0;lastIn=0;speed();save()};
 $("theme").onclick=function(){var d=document.documentElement,dark=getComputedStyle(d).getPropertyValue("--bg").trim()==="#1b1a18";var v=dark?"light":"dark";d.setAttribute("data-theme",v);ss("theme",v)};
 $("focus").onclick=function(){document.body.classList.toggle("focus");this.textContent=document.body.classList.contains("focus")?"通常表示":"集中モード"};
-$("copy").onclick=function(){var b=this;function ok(){b.textContent="コピーしました";setTimeout(function(){b.textContent="全文コピー"},1500)}
+$("copy").onclick=function(){var b=this;function ok(){b.textContent="コピーしました";setTimeout(function(){b.textContent="シーンをコピー"},1500)}
 try{navigator.clipboard.writeText(ed.value).then(ok,fb)}catch(e){fb()}
 function fb(){ed.select();try{document.execCommand("copy");ok()}catch(e){}}};
 document.addEventListener("visibilitychange",function(){if(document.hidden)save()});
@@ -526,7 +564,7 @@ setInterval(function(){speed();tick()},250);setInterval(function(){if(running)sa
 function clean(a){var seen={},o=[];a.forEach(function(x){if(x&&typeof x.word==="string"&&x.word.trim()&&typeof x.meaning==="string"&&!seen[x.word.trim()]){var w=x.word.trim();seen[w]=1;o.push({word:w,reading:String(x.reading||"").trim(),meaning:x.meaning.trim()})}});return o}
 function parse(t){try{var v=JSON.parse(t);if(!Array.isArray(v)&&v&&Array.isArray(v.words))v=v.words;return Array.isArray(v)?clean(v):null}catch(e){return null}}
 var W=[],wi=0,wt=null;
-function showW(){var w=W[wi];if(!w){$("wd").textContent="言葉がありません";$("wm").textContent="words.json を読み込めないか、中身が空です。ファイルを直接開かず、GitHub Pagesなどweb経由で開いているか確認してください。";return}$("wd").textContent=w.word+(w.reading?"("+w.reading+")":"");$("wm").textContent=w.meaning}
+function showW(){var w=W[wi];if(!w){$("wd").textContent="言葉がありません";$("wm").textContent="words.json に語を追加してください。";return}$("wd").textContent=w.word+(w.reading?"("+w.reading+")":"");$("wm").textContent=w.meaning}
 function nextW(d){if(W.length)wi=(wi+d+W.length)%W.length;showW();clearInterval(wt);wt=setInterval(function(){nextW(1)},30000)}
 $("nx").onclick=function(){nextW(1)};$("pv").onclick=function(){nextW(-1)};
 function renderList(){var q=$("wq").value.trim(),h="";$("wcnt").textContent=W.length;W.forEach(function(x,i){if(q&&(x.word+x.reading+x.meaning).indexOf(q)<0)return;h+='<div class="wi" data-i="'+i+'" style="cursor:pointer"><span style="flex:1"><b>'+esc(x.word)+'</b> '+esc(x.reading)+' <span class="mut">'+esc(x.meaning)+'</span></span></div>'});$("wl").innerHTML=h||'<div class="mut">該当なし</div>'}
