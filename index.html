@@ -175,7 +175,7 @@ body.focus main{grid-template-columns:1fr}
 </div><div class="row" style="margin-top:4px"><small>目標</small><input type="number" id="goal" min="0" step="100" style="width:90px"><small>字</small></div>
 <div class="bar"><i id="pb"></i></div><small id="pt"></small> <small id="dgt" class="mut"></small></div>
 <div class="card">
-<div class="row" style="justify-content:space-between;margin-bottom:6px"><h3 style="margin:0" title="30秒ごとに自動で切り替わります">📖 今日の言葉</h3><span class="row" style="gap:4px"><button id="pv" style="padding:5px 8px">←</button><button id="nx" style="padding:5px 8px">→</button><button id="wmg" style="padding:5px 8px">一覧</button></span></div>
+<div class="row" style="justify-content:space-between;margin-bottom:6px"><h3 style="margin:0" title="30秒ごとにランダムで切り替わります(固定中は変わりません)">📖 今日の言葉</h3><span class="row" style="gap:4px"><button id="nx" style="padding:5px 8px">🎲 ランダム</button><button id="wfx" style="padding:5px 8px">📌 固定</button><button id="wmg" style="padding:5px 8px">一覧</button></span></div>
 <div id="wd"></div><div id="wm"></div>
 </div>
 <div class="card" id="scard"><h3>🔍 本文検索(作品全体)</h3>
@@ -545,15 +545,20 @@ function clean(a){var seen={},o=[];a.forEach(function(x){if(x&&typeof x.word==="
 function parse(t){try{var v=JSON.parse(t);if(!Array.isArray(v)&&v&&Array.isArray(v.words))v=v.words;return Array.isArray(v)?clean(v):null}catch(e){return null}}
 var W=[],wi=0,wt=null;
 function showW(){var w=W[wi];if(!w){$("wd").textContent="言葉がありません";$("wm").textContent="words.json を読み込めないか、中身が空です。ファイルを直接開かず、GitHub Pagesなどweb経由で開いているか確認してください。";return}$("wd").textContent=w.word+(w.reading?"("+w.reading+")":"");$("wm").textContent=w.meaning}
-function nextW(d){if(W.length)wi=(wi+d+W.length)%W.length;showW();clearInterval(wt);wt=setInterval(function(){nextW(1)},30000)}
-$("nx").onclick=function(){nextW(1)};$("pv").onclick=function(){nextW(-1)};
+var FIXW=sg("wfix","");
+function isFixed(){return !!FIXW&&W.some(function(x){return x.word===FIXW})}
+function fxLbl(){var b=$("wfx"),f=isFixed();b.textContent=f?"📍 固定解除":"📌 固定";b.style.borderColor=f?"var(--ac)":"";b.style.color=f?"var(--ac)":""}
+function rndW(){if(W.length>1){var j;do{j=Math.floor(Math.random()*W.length)}while(j===wi);wi=j}else wi=0;showW()}
+function nextW(d){if(d)rndW();else showW();clearInterval(wt);wt=setInterval(function(){if(!isFixed())rndW()},30000)}
+$("nx").onclick=function(){nextW(1);if(isFixed()){FIXW=W[wi].word;ss("wfix",FIXW)}};
+$("wfx").onclick=function(){if(isFixed()){FIXW="";ss("wfix","")}else if(W[wi]){FIXW=W[wi].word;ss("wfix",FIXW)}fxLbl()};
 function renderList(){var q=$("wq").value.trim(),h="";$("wcnt").textContent=W.length;W.forEach(function(x,i){if(q&&(x.word+x.reading+x.meaning).indexOf(q)<0)return;h+='<div class="wi" data-i="'+i+'" style="cursor:pointer"><span style="flex:1"><b>'+esc(x.word)+'</b> '+esc(x.reading)+' <span class="mut">'+esc(x.meaning)+'</span></span></div>'});$("wl").innerHTML=h||'<div class="mut">該当なし</div>'}
-function setWords(a){W=a;wi=Math.floor(Math.random()*Math.max(1,W.length));nextW(0);renderList()}
+function setWords(a){W=a;var k=FIXW?W.findIndex(function(x){return x.word===FIXW}):-1;wi=k>=0?k:Math.floor(Math.random()*Math.max(1,W.length));nextW(0);renderList();fxLbl()}
 $("wmg").onclick=function(){renderList();$("dlg").classList.add("on")};
 $("dx").onclick=function(){$("dlg").classList.remove("on")};
 document.addEventListener("keydown",function(e){if(e.key==="Escape")$("dlg").classList.remove("on")});
 $("wq").addEventListener("input",renderList);
-$("wl").addEventListener("click",function(e){var el=e.target.closest(".wi");if(!el)return;wi=parseInt(el.getAttribute("data-i"));nextW(0);$("dlg").classList.remove("on")});
+$("wl").addEventListener("click",function(e){var el=e.target.closest(".wi");if(!el)return;wi=parseInt(el.getAttribute("data-i"));if(isFixed()){FIXW=W[wi].word;ss("wfix",FIXW)}nextW(0);$("dlg").classList.remove("on")});
 setWords(parse($("wjson").textContent)||[]);
 try{fetch("words.json",{cache:"no-store"}).then(function(r){return r.ok?r.text():Promise.reject()}).then(function(t){var a=parse(t);if(a&&a.length)setWords(a)}).catch(function(){})}catch(e){}
 renderSide();stats();speed();tick();highlight();
