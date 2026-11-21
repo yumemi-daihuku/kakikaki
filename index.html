@@ -153,7 +153,7 @@ body.focus main{grid-template-columns:1fr}
 <div class="row" style="margin-top:6px"><input type="text" id="exi" placeholder="除外する語(複数は空白区切り)" style="width:210px" maxlength="60"><button id="exa">除外に追加</button></div>
 <div id="exl" class="mut" style="margin-top:4px;line-height:2"></div>
 <div id="legend" class="mut" style="margin-top:4px;line-height:1.8"></div>
-<div class="mut" id="saved" style="margin-top:4px">未保存</div>
+<div class="mut" style="margin-top:4px"><span id="saved">未保存</span> ・ <span id="cap" title="クリックで再計測(保存容量の目安)" style="cursor:pointer">容量計測中…</span></div>
 </section>
 <aside>
 <div class="card"><h3>⏱ 執筆タイマー<span id="pph"></span></h3>
@@ -199,38 +199,7 @@ body.focus main{grid-template-columns:1fr}
 <div class="mut" style="margin-top:6px">行をタップすると「今日の言葉」に表示します。</div>
 </div></div>
 <script type="application/json" id="wjson">
-[
-  {"word": "逡巡", "reading": "しゅんじゅん", "meaning": "ためらって決断できずにいること。"},
-  {"word": "刹那", "reading": "せつな", "meaning": "きわめて短い時間。一瞬。"},
-  {"word": "邂逅", "reading": "かいこう", "meaning": "思いがけなく出会うこと。"},
-  {"word": "揺蕩う", "reading": "たゆたう", "meaning": "ゆらゆらと揺れ動く。ただよう。"},
-  {"word": "黄昏", "reading": "たそがれ", "meaning": "夕暮れ時。盛りを過ぎた頃のたとえにも使う。"},
-  {"word": "暁", "reading": "あかつき", "meaning": "夜明け前後の、空がほのかに明るくなる頃。"},
-  {"word": "憧憬", "reading": "しょうけい", "meaning": "あこがれること。"},
-  {"word": "寂寥", "reading": "せきりょう", "meaning": "ひっそりとして寂しいさま。"},
-  {"word": "朧", "reading": "おぼろ", "meaning": "ぼんやりとかすんで、はっきりしないさま。"},
-  {"word": "蒼穹", "reading": "そうきゅう", "meaning": "青く澄んだ大空。"},
-  {"word": "微睡む", "reading": "まどろむ", "meaning": "うとうとと浅く眠る。"},
-  {"word": "慟哭", "reading": "どうこく", "meaning": "悲しみのあまり、声をあげて泣くこと。"},
-  {"word": "瞑目", "reading": "めいもく", "meaning": "目を閉じること。安らかに死ぬことも指す。"},
-  {"word": "嗚咽", "reading": "おえつ", "meaning": "声をつまらせて泣くこと。"},
-  {"word": "彷徨う", "reading": "さまよう", "meaning": "あてもなく歩き回る。"},
-  {"word": "面影", "reading": "おもかげ", "meaning": "記憶に残る顔かたち。昔の名残。"},
-  {"word": "逢魔が時", "reading": "おうまがとき", "meaning": "夕暮れの薄暗い頃。魔物に出会いやすい時刻とされた。"},
-  {"word": "暗澹", "reading": "あんたん", "meaning": "暗く、見通しが立たないさま。"},
-  {"word": "訥々", "reading": "とつとつ", "meaning": "口ごもりながら、つかえつつ話すさま。"},
-  {"word": "翳り", "reading": "かげり", "meaning": "光がさえぎられて暗くなること。勢いが衰える兆し。"},
-  {"word": "仄か", "reading": "ほのか", "meaning": "かすかで、はっきりしないさま。"},
-  {"word": "凪", "reading": "なぎ", "meaning": "風がやんで、海面が静かになること。"},
-  {"word": "木漏れ日", "reading": "こもれび", "meaning": "木の葉の間からさし込む日の光。"},
-  {"word": "燦然", "reading": "さんぜん", "meaning": "きらびやかに輝くさま。"},
-  {"word": "静謐", "reading": "せいひつ", "meaning": "静かで落ち着いていること。"},
-  {"word": "慈雨", "reading": "じう", "meaning": "日照りの後に降る恵みの雨。"},
-  {"word": "些細", "reading": "ささい", "meaning": "ごくわずかで、取るに足りないさま。"},
-  {"word": "茫然", "reading": "ぼうぜん", "meaning": "あっけにとられ、我を忘れるさま。"},
-  {"word": "蠢く", "reading": "うごめく", "meaning": "虫などがもぞもぞと動く。"},
-  {"word": "薫風", "reading": "くんぷう", "meaning": "初夏に若葉の上を吹き渡る爽やかな風。"}
-]
+[]
 </script>
 <script>
 (function(){
@@ -307,7 +276,7 @@ function tick(){var l=left();$("tm").textContent=fmt(l);var pc=ttotal>0?Math.min
 // 保存
 var st=null;
 function save(){syncCur();if(LOGD){ss("log",JSON.stringify(LOG));LOGD=0}ss("act",actNow());ss("rem",left());ss("tmin",tmin);ss("add",added);
-var ok=saveStory(IDX.cur)&&saveIdx();renderSide();$("saved").textContent=ok?"保存済み "+new Date().toLocaleString("ja-JP",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"}):"⚠ 保存できません(ブラウザの設定を確認)"}
+var ok=saveStory(IDX.cur)&&saveIdx();renderSide();capUpd();$("saved").textContent=ok?"保存済み "+new Date().toLocaleString("ja-JP",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit",second:"2-digit"}):"⚠ 保存できません(ブラウザの設定を確認)"}
 function later(){$("saved").textContent="保存中…";clearTimeout(st);st=setTimeout(save,400)}
 function syncCur(){var o=S[IDX.cur];if(!o)return;var s=find(o,o.cs);if(s&&s.x!==ed.value){s.x=ed.value;o.upd=Date.now()}if(o.title!==$("title").value||o.goal!==$("goal").value){o.title=$("title").value;o.goal=$("goal").value;o.upd=Date.now()}o.len=total(o)}
 function sl(s){return s.id===S[IDX.cur].cs?cc(ed.value):cc(s.x)}
@@ -538,6 +507,17 @@ o.ch.forEach(function(c){out+="■ "+c.t+"\n\n";c.sc.forEach(function(s){out+="�
 $("copyall").onclick=function(){var b=this,txt=workText();function ok(){b.textContent="コピーしました";setTimeout(function(){b.textContent="作品全体をコピー"},1500)}
 function fb(){var a=document.createElement("textarea");a.value=txt;document.body.appendChild(a);a.select();try{document.execCommand("copy");ok()}catch(e){b.textContent="コピーできませんでした"}a.remove()}
 try{navigator.clipboard.writeText(txt).then(ok,fb)}catch(e){fb()}};
+// 保存容量(localStorageの残り)
+var CAPT=0,CAPL=0,CAPD=0;
+function usedUnits(){var u=0;try{for(var i=0;i<localStorage.length;i++){var k=localStorage.key(i);u+=k.length+(localStorage.getItem(k)||"").length}}catch(e){}return u}
+function capUpd(f){if(!CAPD)return;var now=Date.now();if(!f&&now-CAPL<3000)return;CAPL=now;var el=$("cap");
+if(!CAPT){el.textContent="容量: 取得できません";return}
+var u=usedUnits(),rem=Math.max(0,CAPT-u);el.textContent="残り約 "+rem.toLocaleString()+" 字分("+Math.min(100,Math.round(u/CAPT*100))+"%使用)";el.style.color=rem<100000?"#c0392b":""}
+function probeCap(){var k=K+"probe",lo=0,hi=12000000;try{localStorage.removeItem(k);var base=usedUnits();
+while(hi-lo>4000){var mid=(lo+hi)>>1;try{localStorage.setItem(k,"x".repeat(Math.max(0,mid-k.length)));lo=mid}catch(e){hi=mid}}
+localStorage.removeItem(k);CAPT=base+lo}catch(e){CAPT=0}CAPD=1;capUpd(true)}
+$("cap").onclick=probeCap;
+setTimeout(probeCap,2500);setInterval(probeCap,1800000);
 var ac=null;
 function initAudio(){try{if(!ac)ac=new (window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume()}catch(e){}}
 function beep(f,t,d){try{var o=ac.createOscillator(),g=ac.createGain(),T=ac.currentTime+t;o.frequency.value=f;g.gain.setValueAtTime(.0001,T);g.gain.exponentialRampToValueAtTime(.3,T+.03);g.gain.exponentialRampToValueAtTime(.0001,T+d);o.connect(g);g.connect(ac.destination);o.start(T);o.stop(T+d+.05)}catch(e){}}
@@ -564,7 +544,7 @@ setInterval(function(){speed();tick()},250);setInterval(function(){if(running)sa
 function clean(a){var seen={},o=[];a.forEach(function(x){if(x&&typeof x.word==="string"&&x.word.trim()&&typeof x.meaning==="string"&&!seen[x.word.trim()]){var w=x.word.trim();seen[w]=1;o.push({word:w,reading:String(x.reading||"").trim(),meaning:x.meaning.trim()})}});return o}
 function parse(t){try{var v=JSON.parse(t);if(!Array.isArray(v)&&v&&Array.isArray(v.words))v=v.words;return Array.isArray(v)?clean(v):null}catch(e){return null}}
 var W=[],wi=0,wt=null;
-function showW(){var w=W[wi];if(!w){$("wd").textContent="言葉がありません";$("wm").textContent="words.json に語を追加してください。";return}$("wd").textContent=w.word+(w.reading?"("+w.reading+")":"");$("wm").textContent=w.meaning}
+function showW(){var w=W[wi];if(!w){$("wd").textContent="言葉がありません";$("wm").textContent="words.json を読み込めないか、中身が空です。ファイルを直接開かず、GitHub Pagesなどweb経由で開いているか確認してください。";return}$("wd").textContent=w.word+(w.reading?"("+w.reading+")":"");$("wm").textContent=w.meaning}
 function nextW(d){if(W.length)wi=(wi+d+W.length)%W.length;showW();clearInterval(wt);wt=setInterval(function(){nextW(1)},30000)}
 $("nx").onclick=function(){nextW(1)};$("pv").onclick=function(){nextW(-1)};
 function renderList(){var q=$("wq").value.trim(),h="";$("wcnt").textContent=W.length;W.forEach(function(x,i){if(q&&(x.word+x.reading+x.meaning).indexOf(q)<0)return;h+='<div class="wi" data-i="'+i+'" style="cursor:pointer"><span style="flex:1"><b>'+esc(x.word)+'</b> '+esc(x.reading)+' <span class="mut">'+esc(x.meaning)+'</span></span></div>'});$("wl").innerHTML=h||'<div class="mut">該当なし</div>'}
